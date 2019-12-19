@@ -50,7 +50,7 @@ end
 		f.puts "File: #{file}"
 		f.puts "Date: #{date}" 
 		f.puts "Size: #{size}"
-		f.puts "MD5 : #{md5}"
+		f.puts "MD5: #{md5}"
 		f.puts "SHA1: #{sha1}"
 		f.puts "SHA2: #{sha2}"
 		f.puts "SHA256: #{sha256}"
