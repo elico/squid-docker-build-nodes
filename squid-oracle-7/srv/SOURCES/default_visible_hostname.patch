@@ -1,0 +1,12 @@
+--- src/cf.data.pre	2016-01-07 05:21:47.000000000 +0200
++++ src/cf.data.pre	2016-02-02 02:53:02.741000000 +0200
+@@ -6348,7 +6348,7 @@
+ NAME: visible_hostname
+ TYPE: string
+ LOC: Config.visibleHostname
+-DEFAULT: none
++DEFAULT: squidcache
+ DEFAULT_DOC: Automatically detect the system host name
+ DOC_START
+ 	If you want to present a special hostname in error messages, etc,
+

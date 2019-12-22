@@ -1,0 +1,79 @@
+=== modified file 'src/adaptation/ServiceConfig.cc'
+--- src/adaptation/ServiceConfig.cc	2016-01-07 05:21:47.000000000 +0200
++++ src/adaptation/ServiceConfig.cc	2016-01-10 16:30:54.654842542 +0200
+@@ -114,6 +114,8 @@
+         bool grokked = false;
+         if (strcmp(name, "bypass") == 0) {
+             grokked = grokBool(bypass, name, value);
++        } else if (strcmp(name, "suspend-by-options-fail-only") == 0) {
++            grokked = grokBool(suspendbyoptionsonly, name, value);
+         } else if (strcmp(name, "routing") == 0)
+             grokked = grokBool(routing, name, value);
+         else if (strcmp(name, "uri") == 0)
+@@ -148,7 +148,7 @@
+     debugs(3,5, cfg_filename << ':' << config_lineno << ": " <<
+            "adaptation_service " << key << ' ' <<
+            methodStr() << "_" << vectPointStr() << ' ' <<
+-           bypass << routing << ' ' <<
++           bypass << routing << suspendbyoptionsonly << ' ' <<
+            uri);
+ 
+     return true;
+=== modified file 'src/adaptation/ServiceConfig.h'
+--- src/adaptation/ServiceConfig.h	2016-01-07 05:21:47.000000000 +0200
++++ src/adaptation/ServiceConfig.h	2016-01-10 02:56:50.262544254 +0200
+@@ -40,6 +40,7 @@
+     Method method;   // what is being adapted (REQMOD vs RESPMOD)
+     VectPoint point; // where the adaptation happens (pre- or post-cache)
+     bool bypass;
++    bool suspendbyoptionsonly;
+ 
+     // options
+     long maxConn; ///< maximum number of concurrent service transactions
+
+=== modified file 'src/adaptation/icap/ServiceRep.cc'
+--- src/adaptation/icap/ServiceRep.cc	2016-01-07 05:21:47.000000000 +0200
++++ src/adaptation/icap/ServiceRep.cc	2016-01-10 03:08:43.983427319 +0200
+@@ -74,6 +74,12 @@
+ 
+ void Adaptation::Icap::ServiceRep::noteFailure()
+ {
++    // Expiremental feature
++    if (cfg().suspendbyoptionsonly) {
++        debugs(93,4, HERE << " failure was bypassed by \"suspendbyoptionsonly\" ON state" << status());
++        return;
++    }
++
+     const int failures = theSessionFailures.count(1);
+     debugs(93,4, HERE << " failure " << failures << " out of " <<
+            TheConfig.service_failure_limit << " allowed in " <<
+@@ -515,6 +521,9 @@
+     if (wasAnnouncedUp == up()) // no significant changes to announce
+         return;
+ 
++    if (cfg().suspendbyoptionsonly)
++	return;
++
+     const char *what = cfg().bypass ? "optional" : "essential";
+     const char *state = wasAnnouncedUp ? downPhrase : "up";
+     const int level = important ? 1 :2;
+
+=== modified file 'src/cf.data.pre'
+--- src/cf.data.pre	2016-01-10 03:14:08.826012175 +0200
++++ src/cf.data.pre	2016-01-10 03:14:13.944045332 +0200
+@@ -8330,6 +8330,14 @@
+ 
+ 		Bypass is off by default: services are treated as essential.
+ 
++	suspend-by-options-fail-only=on|off|1|0
++		Expiremental: If set to 'on' or '1', the ICAP service state 
++		will remain static between the scheduled OPTIONS probes.
++
++		suspend-by-options-fail-only is off by default: the state of 
++		the service will be changed to UP or DOWN by the icap failure 
++		basic settings.
++
+ 	routing=on|off|1|0
+ 		If set to 'on' or '1', the ICAP service is allowed to
+ 		dynamically change the current message adaptation plan by
+
