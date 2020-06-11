@@ -2,8 +2,8 @@
 
 set -xe
 
-SOURCES_URL="https://www.squid-cache.org/Versions/v4/squid-4.9.tar.xz"
-SOURCES_URL="http://ngtech.co.il/squid/src/squid-4.9.tar.xz"
+SOURCES_URL="http://www.squid-cache.org/Versions/v4/squid-4.12.tar.xz"
+#SOURCES_URL="http://ngtech.co.il/squid/src/squid-4.12.tar.xz"
 
 if [[ -z "${CUSTOM_SOURCES_URL}" ]];then
         echo ""
@@ -19,7 +19,7 @@ USE_CCACHE="1"
 CCACHE_DIR="/srv/ccache"
 RELEASE_NUMBER="1"
 
-BUILD_ARRAY=`ls -d */`
+BUILD_ARRAY=`ls -d squid*/`
 
 if [[ ! -z "${BUILD_ONLY}" ]];then
 	BUILD_ARRAY=`ls -d */|egrep "${BUILD_ONLY}"`
