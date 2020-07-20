@@ -2,8 +2,8 @@
 
 docker image inspect squidbuild:debian10 || docker build -t squidbuild:debian10 .
 
-SOURCES_URL="https://www.squid-cache.org/Versions/v4/squid-4.8.tar.xz"
-SOURCES_URL="http://ngtech.co.il/squid/src/squid-4.8.tar.xz"
+SOURCES_URL="http://www.squid-cache.org/Versions/v4/squid-4.12.tar.xz"
+#SOURCES_URL="http://ngtech.co.il/squid/src/squid-4.12.tar.xz"
 
 if [[ -z "${CUSTOM_SOURCES_URL}" ]];then
         echo ""

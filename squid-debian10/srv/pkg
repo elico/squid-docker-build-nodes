@@ -124,6 +124,7 @@ find ${DESTDIR}/usr/lib/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostri
 find ${DESTDIR}/usr/bin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 find ${DESTDIR}/usr/sbin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 
+
 tar cvfJ ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar.xz -C ${DESTDIR} .
 
 # Delete each elf binary debug file
@@ -166,7 +167,7 @@ tar cvfz ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar.gz -C ${DESTDIR}
 	;;
 
 	*)
-tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin.tar -C ${DESTDIR} .
+tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin.tar" -C "${DESTDIR}" .
 
 # Find each elf binary
 # strip each elf binary
@@ -174,20 +175,20 @@ find ${DESTDIR}/usr/lib/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostri
 find ${DESTDIR}/usr/bin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 find ${DESTDIR}/usr/sbin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 
-tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar -C ${DESTDIR} .
+tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar" -C "${DESTDIR}" .
 
 # Delete each elf binary debug file
 find ${DESTDIR}/ -type f |grep '.debug'|xargs -l1 rm
 
-tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped-only.tar -C ${DESTDIR} .
+tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped-only.tar" -C "${DESTDIR}" .
 
 # Unpack full package and then pacakge only debug files
 
-tar xfv ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar -C ${DESTDIR}
+tar xfv "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar" -C "${DESTDIR}"
 
 find ${DESTDIR}/ -type f |grep -v '.debug'|xargs -l1 rm
 
-tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar -C ${DESTDIR} .
+tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar" -C "${DESTDIR}" .
 	;;
 esac
 
