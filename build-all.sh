@@ -2,15 +2,19 @@
 
 set -xe
 
-SOURCES_URL="http://www.squid-cache.org/Versions/v4/squid-4.12.tar.xz"
-#SOURCES_URL="http://ngtech.co.il/squid/src/squid-4.12.tar.xz"
-
-if [[ -z "${CUSTOM_SOURCES_URL}" ]];then
-        echo ""
+# Use specified squid version
+if [[ ! -z "${SQUID_VERSION}" ]]; then
+	BASE_VERSION=`echo "${SQUID_VERSION}" | cut -f 1 -d .`
+	export SOURCES_URL="http://www.squid-cache.org/Versions/v${BASE_VERSION}/squid-${SQUID_VERSION}.tar.xz"
 else
-# Validate that the url exists?
-# curl -I "${CUSTOM_SOURCES_URL}"|grep "200 OK"
-        export SOURCES_URL=${CUSTOM_SOURCES_URL}
+# Find and use latest v4 availble version. There has to be a better way..what happens when v5 is stable and latest ???
+	SQUID_LATEST=`curl -sS http://www.squid-cache.org/Versions/v4/RELEASENOTES.html | grep -Eoi "The Squid Team are pleased to announce the release of Squid-[0-9]\.[0-9]+" |cut -f 2 -d "-"`
+	export SOURCES_URL="http://www.squid-cache.org/Versions/v4/squid-${SQUID_LATEST}.tar.xz"
+fi
+
+# Use custom url
+if [[ ! -z "${CUSTOM_SOURCES_URL}" ]];then
+       	export SOURCES_URL=${CUSTOM_SOURCES_URL}
 fi
 
 COMPRESSION="store"
