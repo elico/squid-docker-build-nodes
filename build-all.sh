@@ -37,7 +37,7 @@ do
 	cd "$Build"
 	DOCKER_IMAGE=`cat dockerimage`
 	echo "${DOCKER_IMAGE}"
-	stat dockerimage && \
+	stat build && stat dockerimage && \
 		( docker image inspect  "${DOCKER_IMAGE}" || docker build . -t "${DOCKER_IMAGE}" )
 	stat build && docker run -it \
 	        -e COMPRESSION="${COMPRESSION}" \
