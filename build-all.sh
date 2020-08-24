@@ -7,9 +7,10 @@ if [[ ! -z "${SQUID_VERSION}" ]]; then
 	BASE_VERSION=`echo "${SQUID_VERSION}" | cut -f 1 -d .`
 	export SOURCES_URL="http://www.squid-cache.org/Versions/v${BASE_VERSION}/squid-${SQUID_VERSION}.tar.xz"
 else
-# Find and use latest v4 availble version. There has to be a better way..what happens when v5 is stable and latest ???
-	SQUID_LATEST=`curl -sS http://www.squid-cache.org/Versions/v4/RELEASENOTES.html | grep -Eoi "The Squid Team are pleased to announce the release of Squid-[0-9]\.[0-9]+" |cut -f 2 -d "-"`
-	export SOURCES_URL="http://www.squid-cache.org/Versions/v4/squid-${SQUID_LATEST}.tar.xz"
+# Find and use latest stable availble version. There has to be a better way..???
+	SQUID_LATEST=`curl -sS http://www.squid-cache.org/Versions/ |sed -n '/>Stable Versions<\/a>:<\/h3>/,/<\/a><\/td><td>/p'| grep -oh -E '>[0-9].[0-9][0-9]?' |head -1 |sed 's/>//g'`
+	BASE_VERSION=`echo "${SQUID_LATEST}" | grep -oE '^\s*[0-9]+'`
+	export SOURCES_URL="http://www.squid-cache.org/Versions/v${BASE_VERSION}/squid-${SQUID_LATEST}.tar.xz"
 fi
 
 # Use custom url
