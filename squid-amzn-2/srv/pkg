@@ -88,6 +88,8 @@ cp -v "/srv/SPECS/"* "${BUILDZONE}/SPECS/"
 
 rpmbuild --define '_topdir '${BUILDZONE} --define "_smp_mflags -j${CPU_COUNT}" -ba -vv "${BUILDZONE}/SPECS/${SPEC_FILE}"
 
+rpmbuild --define '_topdir '${BUILDZONE} --define "_smp_mflags -j${CPU_COUNT}" -ba -vv "${BUILDZONE}/SPECS/dummy-perl-crypt.spec"
+
 cp -v "${BUILDZONE}/RPMS/"*"/"* "${PACKAGES_DEST}/"
 cp -v "${BUILDZONE}/SRPMS/"* "${PACKAGES_DEST}/"
 
