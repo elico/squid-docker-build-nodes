@@ -1,26 +1,40 @@
 ## To build all packages
 ```bash
-touch ./*/build
-bash build-all.sh
+make all
 ```
 
 ## To build a specific os package
 ```bash
-touch ./squid-centos-7/build
-BUILD_ONLY="squid-centos-7" bash build-all.sh
+# build-oracle
+# build-oracle-7
+# build-oracle-8
+# build-centos
+# build-centos-7
+# build-centos-8
+# build-amzn
+# build-amzn-1
+# build-amzn-2
+# build-ubuntu
+# build-ubuntu-16.04
+# build-ubuntu-18.04
+# build-ubuntu-20.04
+# build-debian
+# build-debian-9
+# build-debian-10
+
+make centos-7
 ```
 
 ## To clean all old packages
-`bash clean-packages.sh packages`
+`make clean-packages`
 
 ## To clean all ccache
-`bash clean-packages.sh ccahce`
+`make clean-ccache`
 
 ## To clean all old build flags
-`bash clean-packages.sh build`
+`make clean-build-flags`
 
 ## CCACHE sources
 - <https://github.com/ccache/ccache/releases/download/v3.7.6/ccache-3.7.6.tar.gz>
 
-## Related Docs
-* <https://forums.aws.amazon.com/thread.jspa?threadID=314338>
+

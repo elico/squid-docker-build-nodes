@@ -2,8 +2,7 @@
 
 set -xe
 
-SOURCES_URL="http://www.squid-cache.org/Versions/v4/squid-4.12.tar.xz"
-#SOURCES_URL="http://ngtech.co.il/squid/src/squid-4.12.tar.xz"
+SOURCES_URL="$( cat latest-squid-url.txt )"
 
 if [[ -z "${CUSTOM_SOURCES_URL}" ]];then
         echo ""

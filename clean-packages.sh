@@ -25,3 +25,4 @@ case $1 in
 		echo "Usage: $0 (packages|ccache|build)"
 	;;
 esac
+exit 0

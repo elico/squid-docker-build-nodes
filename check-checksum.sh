@@ -53,8 +53,8 @@ case $CHECKSUM in
 		verify ${FILENAME} sha512
 	;;
 	*)
-		echo "STDERR: Defaults to SHA256" >&2
-		verify ${FILENAME} sha256
+		echo "STDERR: Defaults to SHA1" >&2
+		verify ${FILENAME} sha1
 	;;
 esac
 

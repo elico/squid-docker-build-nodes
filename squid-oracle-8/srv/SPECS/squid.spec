@@ -23,7 +23,6 @@ Source6:  squid.nm
 Source7:  squidshut.sh
 Patch0:   pinger_off_v4.patch
 Patch1:   suspendbyoptionsonly.patch
-#Patch2:   assertion_FwdState.cc_serverConnection_eq_conn-trunk-t4-squid4.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
@@ -80,7 +79,6 @@ lookup program (dnsserver), a program for retrieving FTP data
 %setup -q
 %patch0
 %patch1
-#%patch2
 
 %package helpers
 Group: System Environment/Daemons
@@ -337,5 +335,5 @@ fi
     chmod 750 /var/lib/samba/winbindd_privileged  >/dev/null 2>&1 || :
 
 %changelog
-* Tue Nov 06 2018 Eliezer Croitoru <eliezer@ngtech.co.il>
-- Release 4.4 Stable.
+* Sun Sep 06 2020 Eliezer Croitoru <ngtech1ltd@gmail.com>
+- Release 4.13 Stable.

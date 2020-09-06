@@ -1,6 +1,7 @@
 FROM oraclelinux:7
 
 RUN yum clean all \
+   && yum-config-manager --enable ol7_UEKR6 \
    &&  yum update -y \
    &&  yum install -y gcc gcc-c++ libtool libtool-ltdl make cmake git pkgconfig \
 		sudo automake autoconf yum-utils rpm-build \
