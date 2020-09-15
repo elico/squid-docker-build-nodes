@@ -1,0 +1,11 @@
+--- src/cf.data.pre     2015-08-20 17:44:59.000000000 +0300
++++ /tmp/cf.data.pre.new      2015-08-21 02:06:16.775325134 +0300
+@@ -4948,7 +4948,7 @@
+
+ NAME: pinger_enable
+ TYPE: onoff
+-DEFAULT: on
++DEFAULT: off
+ LOC: IcmpCfg.enable
+ IFDEF: USE_ICMP
+ DOC_START

@@ -85,10 +85,10 @@ touch-oracle-8-flags:
 touch-debian-flags: touch-debian-9-flags touch-debian-10-flags
 
 touch-debian-9-flags:
-	touch ./squid-debian-9/build
+	touch ./squid-debian9/build
 
 touch-debian-10-flags:
-	touch ./squid-debian-10/build
+	touch ./squid-debian10/build
 
 
 touch-ubuntu-flags: touch-ubuntu-16.04-flags touch-ubuntu-18.04-flags touch-ubuntu-20.04-flags

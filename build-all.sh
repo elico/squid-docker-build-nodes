@@ -9,7 +9,7 @@ if [[ -z "${CUSTOM_SOURCES_URL}" ]];then
 else
 # Validate that the url exists?
 # curl -I "${CUSTOM_SOURCES_URL}"|grep "200 OK"
-        export SOURCES_URL=${CUSTOM_SOURCES_URL}
+        export SOURCES_URL="${CUSTOM_SOURCES_URL}"
 fi
 
 COMPRESSION="store"
@@ -27,8 +27,10 @@ fi
 #for Build in `find ./ -type d -maxdepth 1`
 for Build in ${BUILD_ARRAY}
 do
-	echo $Build
-	cd "$Build"
+	echo "${Build}"
+	stat "${Build}/build" || continue
+
+	cd "${Build}"
 	DOCKER_IMAGE=`cat dockerimage`
 	echo "${DOCKER_IMAGE}"
 	stat build && stat dockerimage && \
