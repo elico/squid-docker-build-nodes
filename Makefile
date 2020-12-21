@@ -8,9 +8,15 @@ build-centos-7: clean-build-flags touch-centos-7-flags build
 
 build-centos-8: clean-build-flags touch-centos-8-flags build 
 
+build-fedora-33: clean-build-flags touch-fedora-33-flags build 
+
+
 centos-7: build-centos-7
 
 centos-8: build-centos-8
+
+fedora-33: build-fedora-33
+
 
 
 build-oracle: clean-build-flags touch-oracle-flags build 
@@ -55,13 +61,16 @@ amzn-1: build-amzn-1
 amzn-2: build-amzn-2
 
 
-touch-centos-flags: touch-centos7-flags touch-centos-8-flags
+touch-centos-flags: touch-centos-7-flags touch-centos-8-flags
 
 touch-centos-7-flags:
 	touch ./squid-centos-7/build
 
 touch-centos-8-flags:
 	touch ./squid-centos-8/build
+
+touch-fedora-33-flags:
+	touch ./squid-fedora-33/build
 
 
 touch-amzn-flags: touch-amzn-1-flags touch-amzn-2-flags
@@ -119,3 +128,100 @@ clean-packages:
 
 clean-build-flags:
 	bash clean-packages.sh build
+
+clean-centos-containers: clean-centos-7-container clean-centos-8-container
+
+clean-centos-7-container:
+	docker rmi squidbuild:centos7 -f
+
+clean-centos-8-container:
+	docker rmi squidbuild:centos8 -f
+
+
+
+clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container
+
+clean-ubuntu-16.04-container:
+	docker rmi squidbuild:centos1604 -f
+
+clean-ubuntu-18.04-container:
+	docker rmi squidbuild:centos1804 -f
+
+clean-ubuntu-20.04-container:
+	docker rmi squidbuild:centos2004 -f
+
+
+clean-amzn-containers: clean-amzn-1-container clean-amzn-2-container
+
+clean-amzn-1-container:
+	docker rmi squidbuild:amzn1 -f
+
+clean-amzn-2-container:
+	docker rmi squidbuild:amzn2 -f
+
+
+clean-oracle-containers: clean-oracle-7-container clean-oracle-8-container
+
+clean-oracle-7-container:
+	docker rmi squidbuild:ol7 -f
+
+clean-oracle-8-container:
+	docker rmi squidbuild:ol8 -f
+
+
+clean-debian-container: clean-debian-9-container clean-debian-10-container
+
+clean-debian-10-container:
+	docker rmi squidbuild:debian10 -f
+
+clean-debian-9-container:
+	docker rmi squidbuild:debian9 -f
+
+fetch-docker-images: fetch-oracle-images fetch-centos-images fetch-amzn-images fetch-debian-images fetch-ubuntu-images
+
+
+fetch-oracle-images: fetch-oracle-7-image fetch-oracle-8-image
+
+fetch-oracle-7-image:
+	docker pull oraclelinux:7
+fetch-oracle-8-image:
+	docker pull oraclelinux:8
+
+
+fetch-centos-images:  fetch-centos-7-image fetch-centos-8-image
+
+fetch-centos-7-image:
+	docker pull centos:7
+fetch-centos-8-image:
+	docker pull centos:8
+
+fetch-debian-images: fetch-debian-9-image fetch-debian-10-image
+
+fetch-debian-9-image:
+	docker pull debian:stretch
+
+fetch-debian-10-image:
+	docker pull debian:buster
+
+
+fetch-ubuntu-images: fetch-ubuntu-16.04-image fetch-ubuntu-18.04-image fetch-ubuntu-20.04-image
+
+fetch-ubuntu-20.04-image:
+	docker pull ubuntu:20.04
+
+fetch-ubuntu-18.04-image:
+	docker pull ubuntu:18.04
+
+fetch-ubuntu-16.04-image:
+	docker pull ubuntu:16.04
+
+fetch-amzn-images: fetch-amzn-1-image fetch-amzn-2-image
+
+fetch-amzn-1-image:
+	docker pull amazonlinux:1
+
+fetch-amzn-2-image:
+	docker pull amazonlinux:2
+
+
+

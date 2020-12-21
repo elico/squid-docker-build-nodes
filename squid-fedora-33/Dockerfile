@@ -1,12 +1,10 @@
-FROM centos:8
+FROM fedora:33
 
-RUN dnf install -y epel-release dnf-plugins-core \
-   &&  dnf config-manager --set-enabled powertools \
-   &&  dnf clean all \
+RUN dnf install -y dnf-plugins-core \
    &&  dnf update -y \
    &&  dnf install -y gcc gcc-c++ libtool libtool-ltdl make cmake \
 		git pkgconfig sudo automake autoconf yum-utils rpm-build \
-   &&  dnf install -y libxml2 expat-devel openssl-devel libcap ccache \
+   &&  dnf install -y libxml2 expat-devel openssl-devel libcap \
 		libtool-ltdl-devel git autoconf \
 		automake libtool gcc-c++ bzip2 ed \
 		make openldap-devel pam-devel libxml2-devel \
@@ -38,7 +36,7 @@ RUN useradd builder -u 1000 -m -G users,wheel \
 
 USER builder
 
-ENV FLAVOR=rpmbuild OS=centos DIST=el8
+ENV FLAVOR=rpmbuild OS=centos DIST=fc33
 
 CMD ["/srv/pkg"]
 

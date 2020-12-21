@@ -1,6 +1,7 @@
 %define release_number %(echo $RELEASE_NUMBER)
 %define version_number %(echo $SOURCES_VERSION)
 %define sources_url %(echo $SOURCES_URL)
+%define _lto_cflags %{nil}
 
 Name:     squid
 Version:  %{version_number}
