@@ -1,0 +1,23 @@
+[Unit]
+Description=Squid Web Proxy Server
+Documentation=man:squid(8)
+After=syslog.target network.target nss-lookup.target network.target
+
+[Service]
+MemoryAccounting=true
+CPUAccounting=true
+Type=forking
+LimitNOFILE=16384
+PIDFile=/var/run/squid.pid
+#EnvironmentFile=/etc/sysconfig/squid
+ExecStartPre=/usr/bin/mkdir -p /var/run/squid
+ExecStartPre=/usr/bin/chown squid.squid /var/run/squid
+ExecStart=/usr/sbin/squid -sYC
+ExecReload=/usr/sbin/squid -kreconf
+ExecStop=/usr/sbin/squidshut.sh
+TimeoutStopSec=36
+KillMode=none
+
+[Install]
+WantedBy=multi-user.target
+
