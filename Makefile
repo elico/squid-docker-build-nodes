@@ -5,18 +5,22 @@ all: touch-all-build-flags build
 install-fedora-deps:
 	cat fedora-build-deps |head -2 |xargs -l2 dnf install -y
 
+centos: build-centos
+
 build-centos: clean-build-flags touch-centos-flags build 
 
 build-centos-7: clean-build-flags touch-centos-7-flags build 
 
 build-centos-8: clean-build-flags touch-centos-8-flags build 
 
-build-fedora-33: clean-build-flags touch-fedora-33-flags build 
-
-
 centos-7: build-centos-7
 
 centos-8: build-centos-8
+
+
+build-fedora-33: clean-build-flags touch-fedora-33-flags build 
+
+fedora: fedora-33
 
 fedora-33: build-fedora-33
 
@@ -33,6 +37,8 @@ oracle-7: build-oracle-7
 oracle-8: build-oracle-8
 
 
+ubuntu: build-ubuntu
+ 
 build-ubuntu: clean-build-flags touch-ubuntu-flags build 
 
 build-ubuntu-16.04: clean-build-flags touch-ubuntu-16.04-flags build 
@@ -41,6 +47,7 @@ build-ubuntu-18.04: clean-build-flags touch-ubuntu-18.04-flags build
 
 build-ubuntu-20.04: clean-build-flags touch-ubuntu-20.04-flags build 
 
+debian: build-debian
 
 build-debian: clean-build-flags touch-debian-flags build 
 
@@ -72,6 +79,8 @@ touch-centos-7-flags:
 touch-centos-8-flags:
 	touch ./squid-centos-8/build
 
+touch-fedora-flags: touch-fedora-33-flags
+
 touch-fedora-33-flags:
 	touch ./squid-fedora-33/build
 
@@ -85,7 +94,8 @@ touch-amzn-2-flags:
 	touch ./squid-amzn-2/build
 
 
-touch-oracle-flags: touch-oracle-7 touch-oracle-8
+touch-oracle-flags: touch-oracle-7-flags touch-oracle-8-flags
+
 
 touch-oracle-7-flags:
 	touch ./squid-oracle-7/build
@@ -115,8 +125,8 @@ touch-ubuntu-20.04-flags:
 	touch ./squid-ubuntu2004/build
 
 
-touch-all-build-flags:
-	touch ./squid-*/build
+touch-all-build-flags: touch-fedora-flags touch-centos-flags touch-amzn-flags touch-oracle-flags touch-debian-flags touch-ubuntu-flags 
+	echo 1
 
 build:
 	bash build-all.sh
@@ -230,5 +240,106 @@ fetch-amzn-1-image:
 fetch-amzn-2-image:
 	podman pull amazonlinux:2
 
+
+deploy-packages:
+
+deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages
+
+deploy-centos-7-packages:
+	mkdir -p /mnt/staging_repo/centos/7/x86_64
+	mkdir -p /mnt/staging_repo/centos/7/SRPMS
+	cp -v squid-centos-7/srv/packages/*.x86_64.rpm /mnt/staging_repo/centos/7/x86_64/
+	cp -v squid-centos-7/srv/packages/*.src.rpm /mnt/staging_repo/centos/7/SRPMS/
+
+deploy-centos-8-packages:
+	mkdir -p /mnt/staging_repo/centos/8/x86_64
+	mkdir -p /mnt/staging_repo/centos/8/SRPMS
+	cp -v squid-centos-8/srv/packages/*.x86_64.rpm /mnt/staging_repo/centos/8/x86_64/
+	cp -v squid-centos-8/srv/packages/*.src.rpm /mnt/staging_repo/centos/8/SRPMS/
+
+deploy-oracle-packages: deploy-oracle-7-packages  deploy-oracle-8-packages
+
+deploy-oracle-7-packages:
+	mkdir -p /mnt/staging_repo/oracle/7/x86_64
+	mkdir -p /mnt/staging_repo/oracle/7/SRPMS
+	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm /mnt/staging_repo/oracle/7/x86_64/
+	cp -v squid-oracle-7/srv/packages/*.src.rpm /mnt/staging_repo/oracle/7/SRPMS/
+
+deploy-oracle-8-packages:
+	mkdir -p /mnt/staging_repo/oracle/8/x86_64
+	mkdir -p /mnt/staging_repo/oracle/8/SRPMS
+	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm /mnt/staging_repo/oracle/8/x86_64/
+	cp -v squid-oracle-8/srv/packages/*.src.rpm /mnt/staging_repo/oracle/8/SRPMS/
+
+deploy-amzn-packages: deploy-amzn-1-packages  deploy-amzn-2-packages
+
+deploy-amzn-1-packages:
+	mkdir -p /mnt/staging_repo/amzn/1/x86_64
+	mkdir -p /mnt/staging_repo/amzn/1/SRPMS
+	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm /mnt/staging_repo/amzn/1/x86_64/
+	cp -v squid-amzn-1/srv/packages/*.src.rpm /mnt/staging_repo/amzn/1/SRPMS/
+
+deploy-amzn-2-packages:
+	mkdir -p /mnt/staging_repo/amzn/2/x86_64
+	mkdir -p /mnt/staging_repo/amzn/2/SRPMS
+	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm /mnt/staging_repo/amzn/2/x86_64/
+	cp -v squid-amzn-2/srv/packages/*.src.rpm /mnt/staging_repo/amzn/2/SRPMS/
+
+deploy-fedora-packages: deploy-fedora-33-packages
+
+deploy-fedora-33-packages:
+	mkdir -p /mnt/staging_repo/fedora/33/x86_64
+	mkdir -p /mnt/staging_repo/fedora/33/SRPMS
+	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm /mnt/staging_repo/fedora/33/x86_64/
+	cp -v squid-fedora-33/srv/packages/*.src.rpm /mnt/staging_repo/fedora/33/SRPMS/
+
+
+deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages
+
+
+deploy-debian-buster-packages: deploy-debian-10-packages
+
+deploy-buster-packages: deploy-debian-10-packages
+
+deploy-debian-10-packages:
+	mkdir -p /mnt/staging_repo/debian/10/x86_64
+	cp -v squid-debian10/srv/packages/*.tar /mnt/staging_repo/debian/10/x86_64/
+
+
+deploy-debian-jessie-packages: deploy-debian-9-packages
+
+deploy-jessie-packages: deploy-debian-9-packages
+
+deploy-debian-9-packages:
+	mkdir -p /mnt/staging_repo/debian/9/x86_64
+	cp -v squid-debian9/srv/packages/*.tar /mnt/staging_repo/debian/9/x86_64/
+
+
+
+deploy-ubuntu-packages: deploy-ubuntu-1604-packages deploy-ubuntu-1804-packages deploy-ubuntu-2004-packages
+
+
+deploy-1604-packages: deploy-ubuntu-1604-packages
+
+deploy-ubuntu-1604-packages:
+	mkdir -p /mnt/staging_repo/ubuntu/16.04/x86_64
+	cp -v squid-ubuntu1604/srv/packages/*.tar /mnt/staging_repo/ubuntu/16.04/x86_64/
+
+deploy-ubuntu-packages: deploy-ubuntu-1804-packages
+
+deploy-1804-packages: deploy-ubuntu-1804-packages
+
+deploy-ubuntu-1804-packages:
+	mkdir -p /mnt/staging_repo/ubuntu/18.04/x86_64
+	cp -v squid-ubuntu1804/srv/packages/*.tar /mnt/staging_repo/ubuntu/18.04/x86_64/
+
+
+deploy-ubuntu-packages: deploy-ubuntu-2004-packages
+
+deploy-2004-packages: deploy-ubuntu-2004-packages
+
+deploy-ubuntu-2004-packages:
+	mkdir -p /mnt/staging_repo/ubuntu/20.04/x86_64
+	cp -v squid-ubuntu2004/srv/packages/*.tar /mnt/staging_repo/ubuntu/20.04/x86_64/
 
 
