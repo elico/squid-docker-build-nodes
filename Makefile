@@ -1,4 +1,11 @@
 
+REPO_ROOT_FILE=repo_root.txt
+REPO_ROOT=`head -1 $(REPO_ROOT_FILE)`
+
+ifeq ($(REPO_ROOT),)
+REPO_ROOT := "/mnt/staging_repo"
+endif
+
 all: touch-all-build-flags build
 
 
@@ -17,6 +24,9 @@ centos-7: build-centos-7
 
 centos-8: build-centos-8
 
+centos7: build-centos-7
+
+centos8: build-centos-8
 
 build-fedora-33: clean-build-flags touch-fedora-33-flags build 
 
@@ -36,6 +46,9 @@ oracle-7: build-oracle-7
 
 oracle-8: build-oracle-8
 
+oracle7: build-oracle-7
+
+oracle8: build-oracle-8
 
 ubuntu: build-ubuntu
  
@@ -246,52 +259,52 @@ deploy-packages:
 deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages
 
 deploy-centos-7-packages:
-	mkdir -p /mnt/staging_repo/centos/7/x86_64
-	mkdir -p /mnt/staging_repo/centos/7/SRPMS
-	cp -v squid-centos-7/srv/packages/*.x86_64.rpm /mnt/staging_repo/centos/7/x86_64/
-	cp -v squid-centos-7/srv/packages/*.src.rpm /mnt/staging_repo/centos/7/SRPMS/
+	mkdir -p $(REPO_ROOT)/centos/7/x86_64
+	mkdir -p $(REPO_ROOT)/centos/7/SRPMS
+	cp -v squid-centos-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/7/x86_64/
+	cp -v squid-centos-7/srv/packages/*.src.rpm $(REPO_ROOT)/centos/7/SRPMS/
 
 deploy-centos-8-packages:
-	mkdir -p /mnt/staging_repo/centos/8/x86_64
-	mkdir -p /mnt/staging_repo/centos/8/SRPMS
-	cp -v squid-centos-8/srv/packages/*.x86_64.rpm /mnt/staging_repo/centos/8/x86_64/
-	cp -v squid-centos-8/srv/packages/*.src.rpm /mnt/staging_repo/centos/8/SRPMS/
+	mkdir -p $(REPO_ROOT)/centos/8/x86_64
+	mkdir -p $(REPO_ROOT)/centos/8/SRPMS
+	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/x86_64/
+	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/SRPMS/
 
 deploy-oracle-packages: deploy-oracle-7-packages  deploy-oracle-8-packages
 
 deploy-oracle-7-packages:
-	mkdir -p /mnt/staging_repo/oracle/7/x86_64
-	mkdir -p /mnt/staging_repo/oracle/7/SRPMS
-	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm /mnt/staging_repo/oracle/7/x86_64/
-	cp -v squid-oracle-7/srv/packages/*.src.rpm /mnt/staging_repo/oracle/7/SRPMS/
+	mkdir -p $(REPO_ROOT)/oracle/7/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/7/SRPMS
+	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/7/x86_64/
+	cp -v squid-oracle-7/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/7/SRPMS/
 
 deploy-oracle-8-packages:
-	mkdir -p /mnt/staging_repo/oracle/8/x86_64
-	mkdir -p /mnt/staging_repo/oracle/8/SRPMS
-	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm /mnt/staging_repo/oracle/8/x86_64/
-	cp -v squid-oracle-8/srv/packages/*.src.rpm /mnt/staging_repo/oracle/8/SRPMS/
+	mkdir -p $(REPO_ROOT)/oracle/8/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/8/SRPMS
+	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/x86_64/
+	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/SRPMS/
 
 deploy-amzn-packages: deploy-amzn-1-packages  deploy-amzn-2-packages
 
 deploy-amzn-1-packages:
-	mkdir -p /mnt/staging_repo/amzn/1/x86_64
-	mkdir -p /mnt/staging_repo/amzn/1/SRPMS
-	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm /mnt/staging_repo/amzn/1/x86_64/
-	cp -v squid-amzn-1/srv/packages/*.src.rpm /mnt/staging_repo/amzn/1/SRPMS/
+	mkdir -p $(REPO_ROOT)/amzn/1/x86_64
+	mkdir -p $(REPO_ROOT)/amzn/1/SRPMS
+	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/1/x86_64/
+	cp -v squid-amzn-1/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/1/SRPMS/
 
 deploy-amzn-2-packages:
-	mkdir -p /mnt/staging_repo/amzn/2/x86_64
-	mkdir -p /mnt/staging_repo/amzn/2/SRPMS
-	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm /mnt/staging_repo/amzn/2/x86_64/
-	cp -v squid-amzn-2/srv/packages/*.src.rpm /mnt/staging_repo/amzn/2/SRPMS/
+	mkdir -p $(REPO_ROOT)/amzn/2/x86_64
+	mkdir -p $(REPO_ROOT)/amzn/2/SRPMS
+	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/x86_64/
+	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/SRPMS/
 
 deploy-fedora-packages: deploy-fedora-33-packages
 
 deploy-fedora-33-packages:
-	mkdir -p /mnt/staging_repo/fedora/33/x86_64
-	mkdir -p /mnt/staging_repo/fedora/33/SRPMS
-	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm /mnt/staging_repo/fedora/33/x86_64/
-	cp -v squid-fedora-33/srv/packages/*.src.rpm /mnt/staging_repo/fedora/33/SRPMS/
+	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/33/SRPMS
+	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/33/x86_64/
+	cp -v squid-fedora-33/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/33/SRPMS/
 
 
 deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages
@@ -302,8 +315,8 @@ deploy-debian-buster-packages: deploy-debian-10-packages
 deploy-buster-packages: deploy-debian-10-packages
 
 deploy-debian-10-packages:
-	mkdir -p /mnt/staging_repo/debian/10/x86_64
-	cp -v squid-debian10/srv/packages/*.tar /mnt/staging_repo/debian/10/x86_64/
+	mkdir -p $(REPO_ROOT)/debian/10/x86_64
+	cp -v squid-debian10/srv/packages/*.tar $(REPO_ROOT)/debian/10/x86_64/
 
 
 deploy-debian-jessie-packages: deploy-debian-9-packages
@@ -311,8 +324,8 @@ deploy-debian-jessie-packages: deploy-debian-9-packages
 deploy-jessie-packages: deploy-debian-9-packages
 
 deploy-debian-9-packages:
-	mkdir -p /mnt/staging_repo/debian/9/x86_64
-	cp -v squid-debian9/srv/packages/*.tar /mnt/staging_repo/debian/9/x86_64/
+	mkdir -p $(REPO_ROOT)/debian/9/x86_64
+	cp -v squid-debian9/srv/packages/*.tar $(REPO_ROOT)/debian/9/x86_64/
 
 
 
@@ -322,16 +335,16 @@ deploy-ubuntu-packages: deploy-ubuntu-1604-packages deploy-ubuntu-1804-packages 
 deploy-1604-packages: deploy-ubuntu-1604-packages
 
 deploy-ubuntu-1604-packages:
-	mkdir -p /mnt/staging_repo/ubuntu/16.04/x86_64
-	cp -v squid-ubuntu1604/srv/packages/*.tar /mnt/staging_repo/ubuntu/16.04/x86_64/
+	mkdir -p $(REPO_ROOT)/ubuntu/16.04/x86_64
+	cp -v squid-ubuntu1604/srv/packages/*.tar $(REPO_ROOT)/ubuntu/16.04/x86_64/
 
 deploy-ubuntu-packages: deploy-ubuntu-1804-packages
 
 deploy-1804-packages: deploy-ubuntu-1804-packages
 
 deploy-ubuntu-1804-packages:
-	mkdir -p /mnt/staging_repo/ubuntu/18.04/x86_64
-	cp -v squid-ubuntu1804/srv/packages/*.tar /mnt/staging_repo/ubuntu/18.04/x86_64/
+	mkdir -p $(REPO_ROOT)/ubuntu/18.04/x86_64
+	cp -v squid-ubuntu1804/srv/packages/*.tar $(REPO_ROOT)/ubuntu/18.04/x86_64/
 
 
 deploy-ubuntu-packages: deploy-ubuntu-2004-packages
@@ -339,7 +352,7 @@ deploy-ubuntu-packages: deploy-ubuntu-2004-packages
 deploy-2004-packages: deploy-ubuntu-2004-packages
 
 deploy-ubuntu-2004-packages:
-	mkdir -p /mnt/staging_repo/ubuntu/20.04/x86_64
-	cp -v squid-ubuntu2004/srv/packages/*.tar /mnt/staging_repo/ubuntu/20.04/x86_64/
+	mkdir -p $(REPO_ROOT)/ubuntu/20.04/x86_64
+	cp -v squid-ubuntu2004/srv/packages/*.tar $(REPO_ROOT)/ubuntu/20.04/x86_64/
 
 
