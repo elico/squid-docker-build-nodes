@@ -307,6 +307,44 @@ deploy-fedora-33-packages:
 	cp -v squid-fedora-33/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/33/SRPMS/
 
 
+create-repo-centos: create-repo-centos7 create-repo-centos8
+
+create-repo-centos7:
+	cd $(REPO_ROOT)/centos/7/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/centos/7/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/centos/7
+
+create-repo-centos8:
+	cd $(REPO_ROOT)/centos/8/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/centos/8/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/centos/8
+
+create-repo-oracle: create-repo-oracle7 create-repo-oracle8
+
+create-repo-oracle7:
+	cd $(REPO_ROOT)/oracle/7/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/oracle/7/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/oracle/7
+
+create-repo-oracle8:
+	cd $(REPO_ROOT)/oracle/8/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/oracle/8/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/oracle/8
+
+create-repo-amzn: create-repo-amzn2
+
+
+create-repo-amzn1:
+	cd $(REPO_ROOT)/amzn/1/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/amzn/1/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/amzn/1
+
+create-repo-amzn2:
+	cd $(REPO_ROOT)/amzn/2/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/amzn/2/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/amzn/2
+
+
 deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages
 
 
