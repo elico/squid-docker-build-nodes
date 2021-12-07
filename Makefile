@@ -12,6 +12,8 @@ all: touch-all-build-flags build
 install-fedora-deps:
 	cat fedora-build-deps |head -2 |xargs -l2 dnf install -y
 
+build-rpms: clean-build-flags touch-centos-flags touch-oracle-flags touch-amzn-2-flags build
+
 centos: build-centos
 
 build-centos: clean-build-flags touch-centos-flags build 
@@ -394,3 +396,10 @@ deploy-ubuntu-2004-packages:
 	cp -v squid-ubuntu2004/srv/packages/*.tar $(REPO_ROOT)/ubuntu/20.04/x86_64/
 
 
+clean-rpms-packages:
+	rm -vf squid-centos-7/srv/packages/*.rpm 
+	rm -vf squid-centos-8/srv/packages/*.rpm 
+	rm -vf squid-oracle-7/srv/packages/*.rpm 
+	rm -vf squid-oracle-8/srv/packages/*.rpm 
+	rm -vf squid-amzn-1/srv/packages/*.rpm
+	rm -vf squid-amzn-2/srv/packages/*.rpm

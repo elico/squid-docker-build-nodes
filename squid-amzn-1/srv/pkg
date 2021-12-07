@@ -44,9 +44,9 @@ export SOURCES_VERSION=$(echo ${SOURCES_FILENAME} |sed -e 's@\.tar\.bz2$@@g'  |s
 export SOURCES_VERSION=$(echo "${SOURCES_VERSION}"|sed -e 's@squid-@@g')
 
 cd ${BUILDZONE}
-sudo mkdir -p "${PACKAGES_DEST}"
-sudo chmod 777 "${PACKAGES_DEST}"
-sudo chown ${USER}: "${PACKAGES_DEST}"
+mkdir -p "${PACKAGES_DEST}"
+chmod 777 "${PACKAGES_DEST}"
+chown ${USER}: "${PACKAGES_DEST}"
 
 mkdir -p ${BUILDZONE}/{BUILD,RPMS,SRPMS,SPECS,SOURCES}
 
@@ -54,9 +54,9 @@ if [[ "${USE_CCACHE}" -eq "1" ]];then
 	ccache -s
 
 	if [[ ! -z "${CCACHE_DIR}" ]]; then
-		sudo mkdir -p "${CCACHE_DIR}"
-		sudo chmod 777 "${CCACHE_DIR}"
-		sudo chown -R "${USER}": "${CCACHE_DIR}"
+		mkdir -p "${CCACHE_DIR}"
+		chmod 777 "${CCACHE_DIR}"
+		chown -R "${USER}": "${CCACHE_DIR}"
 		export PATH=/usr/lib/ccache:${PATH}
 	fi
 

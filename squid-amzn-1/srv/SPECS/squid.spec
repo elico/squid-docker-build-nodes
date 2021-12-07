@@ -107,6 +107,10 @@ The squid-helpers contains the external helpers.
 export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
 export PERL=/usr/bin/perl
 
+mkdir -p src/icmp/tests
+mkdir -p tools/squidclient/tests
+mkdir -p tools/tests
+
 %configure \
   --exec_prefix=/usr \
   --libexecdir=%{_libdir}/squid \
@@ -342,5 +346,5 @@ fi
     chmod 750 /var/lib/samba/winbindd_privileged  >/dev/null 2>&1 || :
 
 %changelog
-* Tue Dec 18 2019 Eliezer Croitoru <eliezer@ngtech.co.il>
-- Release 4.9-1 This is a testing version.
+* Thu Oct 07 2021 Eliezer Croitoru <eliezer@ngtech.co.il>
+- Release 4.17-1 This is a testing version.

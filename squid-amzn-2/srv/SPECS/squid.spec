@@ -95,6 +95,10 @@ The squid-helpers contains the external helpers.
 export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
 export PERL=/usr/bin/perl
 
+mkdir -p src/icmp/tests
+mkdir -p tools/squidclient/tests
+mkdir -p tools/tests
+
 %configure \
   --exec_prefix=/usr \
   --libexecdir=%{_libdir}/squid \

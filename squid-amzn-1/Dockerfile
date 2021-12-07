@@ -47,7 +47,8 @@ RUN useradd builder -u 1000 -m -G users,wheel \
    &&  mkdir /home/builder/rpm \
    &&  chown -R builder /home/builder
 
-USER builder
+#USER builder
+USER root
 
 ENV FLAVOR=rpmbuild OS=amzn DIST=amzn1
 

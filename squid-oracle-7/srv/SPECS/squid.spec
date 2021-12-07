@@ -119,6 +119,10 @@ The squid-helpers contains the external helpers.
 export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
 export PERL=/usr/bin/perl
 
+mkdir -p src/icmp/tests
+mkdir -p tools/squidclient/tests
+mkdir -p tools/tests
+
 %configure \
    --disable-strict-error-checking \
    --exec_prefix=/usr \
@@ -136,7 +140,7 @@ export PERL=/usr/bin/perl
    --enable-auth-ntlm="fake" \
    --enable-auth-digest="file,LDAP,eDirectory" \
    --enable-auth-negotiate="kerberos,wrapper" \
-   --enable-external-acl-helpers="wbinfo_group,kerberos_ldap_group,LDAP_group,delayer,file_userip,SQL_session,unix_group,session,time_quota" \
+   --enable-external-acl-helpers="kerberos_ldap_group,LDAP_group,delayer,file_userip,SQL_session,unix_group,session" \
    --enable-cache-digests \
    --enable-cachemgr-hostname=localhost \
    --enable-delay-pools \
@@ -286,7 +290,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/squid/digest_ldap_auth
 %{_libdir}/squid/digest_edirectory_auth
 %{_libdir}/squid/ext_kerberos_ldap_group_acl
-%{_libdir}/squid/ext_wbinfo_group_acl
+#%{_libdir}/squid/ext_wbinfo_group_acl
 
 #%{_libdir}/squid/helper-mux.pl
 
@@ -308,7 +312,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/squid/ext_sql_session_acl
 %{_libdir}/squid/ext_unix_group_acl
 %{_libdir}/squid/ext_session_acl
-%{_libdir}/squid/ext_time_quota_acl
+#%{_libdir}/squid/ext_time_quota_acl
 
 %{_libdir}/squid/helper-mux
 %{_libdir}/squid/security_fake_certverify
