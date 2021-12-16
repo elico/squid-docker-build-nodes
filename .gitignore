@@ -1,2 +1,5 @@
 */ccache
 */packages
+squid-*/srv/packages/
+squid-*/srv/ccache/
+squid-*/build

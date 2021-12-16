@@ -16,6 +16,7 @@ RUN yum clean all \
 
 RUN yum update -y \
    &&  yum install -y yum-utils \
+   &&  yum install -y samba-winbind-clients \ 
    &&  yum-config-manager --enable ol7_optional_latest \
    &&  yum install -y systemd-units openldap-devel pam-devel \
 		openssl-devel krb5-devel db4-devel expat-devel \

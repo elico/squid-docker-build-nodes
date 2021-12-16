@@ -140,7 +140,11 @@ mkdir -p tools/tests
    --enable-auth-ntlm="fake" \
    --enable-auth-digest="file,LDAP,eDirectory" \
    --enable-auth-negotiate="kerberos,wrapper" \
+<<<<<<< HEAD
    --enable-external-acl-helpers="kerberos_ldap_group,LDAP_group,delayer,file_userip,SQL_session,unix_group,session" \
+=======
+   --enable-external-acl-helpers="wbinfo_group,kerberos_ldap_group,LDAP_group,delayer,file_userip,SQL_session,unix_group,session" \
+>>>>>>> 96db7dd... 4.17
    --enable-cache-digests \
    --enable-cachemgr-hostname=localhost \
    --enable-delay-pools \
