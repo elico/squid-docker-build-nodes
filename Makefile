@@ -258,6 +258,9 @@ fetch-amzn-2-image:
 
 deploy-packages:
 
+deploy-rpms: deploy-centos-packages deploy-oracle-packages deploy-amzn-2-packages
+
+
 deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages
 
 deploy-centos-7-packages:

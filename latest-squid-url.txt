@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 http://www.ngtech.co.il/squid/src/squid-4.17.tar.xz
-=======
-https://www.ngtech.co.il/squid/src/squid-4.17.tar.xz
->>>>>>> 96db7dd... 4.17
