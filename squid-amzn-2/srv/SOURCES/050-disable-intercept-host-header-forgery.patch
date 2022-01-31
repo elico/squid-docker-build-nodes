@@ -1,0 +1,88 @@
+--- src/client_side_request.cc	2021-10-03 20:18:09.000000000 +0300
++++ src/client_side_request.cc	2022-01-24 19:28:24.596816382 +0200
+@@ -534,20 +534,30 @@
+             if (clientConn->local.matchIPAddr(ia->in_addrs[i]) == 0) {
+                 debugs(85, 3, HERE << "validate IP " << clientConn->local << " possible from Host:");
+                 http->request->flags.hostVerified = true;
+                 http->doCallouts();
+                 return;
+             }
+             debugs(85, 3, HERE << "validate IP " << clientConn->local << " non-match from Host: IP " << ia->in_addrs[i]);
+         }
+     }
+     debugs(85, 3, HERE << "FAIL: validate IP " << clientConn->local << " possible from Host:");
++    if (http->request->flags.intercepted || http->request->flags.interceptTproxy) {
++        if (!Config.onoff.interceptHostStrictVerify && http->request->method == Http::METHOD_CONNECT) {
++            debugs(85, 3, "Forcing Host verified for: " << clientConn->local << " possible from Host:" << http->request->effectiveRequestUri());
++            http->request->flags.hostVerified = true;
++            http->request->flags.cachable = false;
++            http->request->flags.hierarchical = false;
++            http->doCallouts();
++            return;
++        }
++    }
+     hostHeaderVerifyFailed("local IP", "any domain IP");
+ }
+ 
+ void
+ ClientRequestContext::hostHeaderVerifyFailed(const char *A, const char *B)
+ {
+     // IP address validation for Host: failed. Admin wants to ignore them.
+     // NP: we do not yet handle CONNECT tunnels well, so ignore for them
+     if (!Config.onoff.hostStrictVerify && http->request->method != Http::METHOD_CONNECT) {
+         debugs(85, 3, "SECURITY ALERT: Host header forgery detected on " << http->getConn()->clientConnection <<
+--- src/SquidConfig.h	2021-10-03 20:18:09.000000000 +0300
++++ src/SquidConfig.h	2022-01-24 19:28:55.093036717 +0200
+@@ -331,20 +331,21 @@
+ #if LINUX_NETFILTER
+         int tproxy_uses_indirect_client;
+ #endif
+ #endif /* FOLLOW_X_FORWARDED_FOR */
+ 
+         int WIN32_IpAddrChangeMonitor;
+         int memory_cache_first;
+         int memory_cache_disk;
+         int hostStrictVerify;
+         int client_dst_passthru;
++        int interceptHostStrictVerify;
+         int dns_mdns;
+ #if USE_OPENSSL
+         bool logTlsServerHelloDetails;
+ #endif
+     } onoff;
+ 
+     int64_t collapsed_forwarding_shared_entries_limit;
+ 
+     int pipeline_max_prefetch;
+ 
+--- src/cf.data.pre	2021-10-03 20:18:09.000000000 +0300
++++ src/cf.data.pre	2022-01-24 19:29:01.659084273 +0200
+@@ -2716,20 +2716,28 @@
+ 	located to send intercepted traffic DIRECT to an origin server.
+ 	The clients original destination IP and port will be used instead.
+ 	
+ 	Regardless of this option setting, when dealing with intercepted
+ 	traffic Squid will verify the Host: header and any traffic which
+ 	fails Host verification will be treated as if this option were ON.
+ 	
+ 	see host_verify_strict for details on the verification process.
+ DOC_END
+ 
++NAME: intercept_host_strict_verify
++TYPE: onoff
++DEFAULT: off
++LOC: Config.onoff.interceptHostStrictVerify
++DOC_START
++	Disable host_verify_strict for NAT or TPROXY intercepted traffic.
++DOC_END
++
+ COMMENT_START
+  TLS OPTIONS
+  -----------------------------------------------------------------------------
+ COMMENT_END
+ 
+ NAME: tls_outgoing_options
+ IFDEF: USE_GNUTLS||USE_OPENSSL
+ TYPE: securePeerOptions
+ DEFAULT: min-version=1.0
+ LOC: Security::ProxyOutgoingConfig

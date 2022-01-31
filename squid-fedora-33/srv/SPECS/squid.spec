@@ -23,8 +23,7 @@ Source5:  squid.pam
 Source6:  squid.nm
 Source7:  squidshut.sh
 Patch0:   pinger_off_v4.patch
-#Patch1:   suspendbyoptionsonly.patch
-#Patch2:   assertion_FwdState.cc_serverConnection_eq_conn-trunk-t4-squid4.patch
+Patch1:   050-disable-intercept-host-header-forgery.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
@@ -78,8 +77,7 @@ lookup program (dnsserver), a program for retrieving FTP data
 %prep
 %setup -q
 %patch0
-#%patch1
-#%patch2
+%patch1
 
 %package helpers
 Group: System Environment/Daemons

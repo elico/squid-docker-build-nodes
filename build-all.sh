@@ -16,7 +16,7 @@ COMPRESSION="store"
 DEBUG_MODE="1"
 USE_CCACHE="1"
 CCACHE_DIR="/srv/ccache"
-RELEASE_NUMBER="1"
+RELEASE_NUMBER=$(head -1 release)
 
 BUILD_ARRAY=`ls -d squid*/`
 

@@ -3,3 +3,5 @@
 squid-*/srv/packages/
 squid-*/srv/ccache/
 squid-*/build
+squid-*/srv/tmp/*
+tmp/*
