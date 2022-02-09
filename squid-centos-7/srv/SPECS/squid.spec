@@ -24,6 +24,9 @@ Source7:  squidshut.sh
 Patch0:   pinger_off_v4.patch
 Patch1:   suspendbyoptionsonly.patch
 Patch2:   050-disable-intercept-host-header-forgery.patch
+Patch3:   050-disable-intercept-host-header-forgery-5.4_1.patch
+Patch4:   050-disable-intercept-host-header-forgery-5.4_2.patch
+Patch5:   050-disable-intercept-host-header-forgery-5.4_3.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
@@ -80,7 +83,17 @@ lookup program (dnsserver), a program for retrieving FTP data
 %setup -q
 %patch0
 %patch1
+%if "%{version_number}" < "5.0"
+
 %patch2
+
+%else
+
+%patch3
+%patch4
+%patch5
+%endif
+
 
 %package helpers
 Group: System Environment/Daemons
