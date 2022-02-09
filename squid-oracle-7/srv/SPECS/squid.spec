@@ -27,6 +27,9 @@ Patch0:   pinger_off_v4.patch
 Patch1:   suspendbyoptionsonly.patch
 Patch2:   default_visible_hostname.patch
 Patch3:   050-disable-intercept-host-header-forgery.patch
+Patch4:   050-disable-intercept-host-header-forgery-5.4_1.patch
+Patch5:   050-disable-intercept-host-header-forgery-5.4_2.patch
+Patch6:   050-disable-intercept-host-header-forgery-5.4_3.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
@@ -105,7 +108,18 @@ The squid-helpers contains the external helpers.
 %patch0
 %patch1
 %patch2
+
+%if "%{version_number}" < "5.0"
+
 %patch3
+
+%else
+
+%patch4
+%patch5
+%patch6
+
+%endif
 
 %build
 ## the next if was causing selinux issues that was mentioned in the redhat bugzilla
