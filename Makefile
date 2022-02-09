@@ -275,6 +275,22 @@ deploy-centos-8-packages:
 	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/x86_64/
 	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/SRPMS/
 
+
+deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta-packages
+
+deploy-centos-7-beta-packages:
+	mkdir -p $(REPO_ROOT)/centos/7/beta/x86_64
+	mkdir -p $(REPO_ROOT)/centos/7/beta/SRPMS
+	cp -v squid-centos-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/7/beta/x86_64/
+	cp -v squid-centos-7/srv/packages/*.src.rpm $(REPO_ROOT)/centos/7/beta/SRPMS/
+
+deploy-centos-8-beta-packages:
+	mkdir -p $(REPO_ROOT)/centos/8/beta/x86_64
+	mkdir -p $(REPO_ROOT)/centos/8/beta/SRPMS
+	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/beta/x86_64/
+	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/beta/SRPMS/
+
+
 deploy-oracle-packages: deploy-oracle-7-packages  deploy-oracle-8-packages
 
 deploy-oracle-7-packages:
@@ -289,6 +305,21 @@ deploy-oracle-8-packages:
 	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/x86_64/
 	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/SRPMS/
 
+deploy-oracle-beta-packages: deploy-oracle-7-beta-packages  deploy-oracle-8-beta-packages
+
+deploy-oracle-7-beta-packages:
+	mkdir -p $(REPO_ROOT)/oracle/7/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/7/SRPMS
+	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/7/x86_64/
+	cp -v squid-oracle-7/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/7/SRPMS/
+
+deploy-oracle-8-beta-packages:
+	mkdir -p $(REPO_ROOT)/oracle/8/beta/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/8/beta/SRPMS
+	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/beta/x86_64/
+	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/beta/SRPMS/
+
+
 deploy-amzn-packages: deploy-amzn-1-packages  deploy-amzn-2-packages
 
 deploy-amzn-1-packages:
@@ -302,6 +333,20 @@ deploy-amzn-2-packages:
 	mkdir -p $(REPO_ROOT)/amzn/2/SRPMS
 	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/x86_64/
 	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/SRPMS/
+
+deploy-amzn-beta-packages: deploy-amzn-1-beta-packages  deploy-amzn-2-beta-packages
+
+deploy-amzn-1-beta-packages:
+	mkdir -p $(REPO_ROOT)/amzn/1/beta/x86_64
+	mkdir -p $(REPO_ROOT)/amzn/1/beta/SRPMS
+	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/1/beta/x86_64/
+	cp -v squid-amzn-1/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/1/beta/SRPMS/
+
+deploy-amzn-2-beta-packages:
+	mkdir -p $(REPO_ROOT)/amzn/2/beta/x86_64
+	mkdir -p $(REPO_ROOT)/amzn/2/beta/SRPMS
+	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/beta/x86_64/
+	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/beta/SRPMS/
 
 deploy-fedora-packages: deploy-fedora-33-packages
 
@@ -324,6 +369,18 @@ create-repo-centos8:
 	cd $(REPO_ROOT)/centos/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/8
 
+create-beta-repo-centos: create-beta-repo-centos7 create-beta-repo-centos8
+
+create-beta-repo-centos7:
+	cd $(REPO_ROOT)/centos/7/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/centos/7/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/centos/7/beta
+
+create-beta-repo-centos8:
+	cd $(REPO_ROOT)/centos/8/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/centos/8/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/centos/8/beta
+
 create-repo-oracle: create-repo-oracle7 create-repo-oracle8
 
 create-repo-oracle7:
@@ -336,8 +393,19 @@ create-repo-oracle8:
 	cd $(REPO_ROOT)/oracle/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/oracle/8
 
-create-repo-amzn: create-repo-amzn2
+create-beta-repo-oracle: create-beta-repo-oracle7 create-beta-repo-oracle8
 
+create-beta-repo-oracle7:
+	cd $(REPO_ROOT)/oracle/7/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/oracle/7/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/oracle/7/beta
+
+create-beta-repo-oracle8:
+	cd $(REPO_ROOT)/oracle/8/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/oracle/8/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/oracle/8/beta
+
+create-repo-amzn: create-repo-amzn2
 
 create-repo-amzn1:
 	cd $(REPO_ROOT)/amzn/1/SRPMS && createrepo ./
@@ -348,6 +416,18 @@ create-repo-amzn2:
 	cd $(REPO_ROOT)/amzn/2/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/amzn/2/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/amzn/2
+
+create-beta-repo-amzn: create-beta-repo-amzn2
+
+create-beta-repo-amzn1:
+	cd $(REPO_ROOT)/amzn/1/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/amzn/1/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/amzn/1/beta
+
+create-beta-repo-amzn2:
+	cd $(REPO_ROOT)/amzn/2/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/amzn/2/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/amzn/2/beta
 
 
 deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages

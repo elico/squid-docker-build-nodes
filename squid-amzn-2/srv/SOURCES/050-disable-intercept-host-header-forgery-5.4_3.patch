@@ -1,0 +1,59 @@
+--- src/cf.data.pre	2022-02-07 08:46:21.000000000 +0200
++++ src/cf.data.pre	2022-02-09 11:58:26.136905483 +0200
+@@ -2914,40 +2914,56 @@
+ 	With NAT or TPROXY intercepted traffic Squid may pass the request
+ 	directly to the original client destination IP or seek a faster
+ 	source using the HTTP Host header.
+ 	
+ 	Using Host to locate alternative servers can provide faster
+ 	connectivity with a range of failure recovery options.
+ 	But can also lead to connectivity trouble when the client and
+ 	server are attempting stateful interactions unaware of the proxy.
+ 	
+ 	This option (on by default) prevents alternative DNS entries being
+ 	located to send intercepted traffic DIRECT to an origin server.
+ 	The clients original destination IP and port will be used instead.
+ 	
+ 	Regardless of this option setting, when dealing with intercepted
+ 	traffic Squid will verify the Host: header and any traffic which
+ 	fails Host verification will be treated as if this option were ON.
+ 	
+ 	see host_verify_strict for details on the verification process.
+ DOC_END
+ 
++NAME: intercept_host_strict_verify
++TYPE: onoff
++DEFAULT: off
++LOC: Config.onoff.interceptHostStrictVerify
++DOC_START
++       Disable host_verify_strict for NAT or TPROXY intercepted traffic.
++DOC_END
++
++NAME: intercept_host_strict_verify
++TYPE: onoff
++DEFAULT: off
++LOC: Config.onoff.interceptHostStrictVerify
++DOC_START
++	Disable host_verify_strict for NAT or TPROXY intercepted traffic.
++DOC_END
++
+ COMMENT_START
+  TLS OPTIONS
+  -----------------------------------------------------------------------------
+ COMMENT_END
+ 
+ NAME: tls_outgoing_options
+ IFDEF: USE_GNUTLS||USE_OPENSSL
+ TYPE: securePeerOptions
+ DEFAULT: min-version=1.0
+ LOC: Security::ProxyOutgoingConfig
+ DOC_START
+ 	disable		Do not support https:// URLs.
+ 	
+ 	cert=/path/to/client/certificate
+ 			A client X.509 certificate to use when connecting.
+ 	
+ 	key=/path/to/client/private_key
+ 			The private key corresponding to the cert= above.
+ 
+ 			If key= is not specified cert= is assumed to
