@@ -20,6 +20,7 @@ export SOURCES_FILENAME=$(basename ${SOURCES_URL})
 export BUILDZONE=${HOME}
 export DESTDIR="${BUILDZONE}/fakeroot"
 export PACKAGES_DEST="/srv/packages"
+export PATCHES_DIR="/srv/patches/enabled"
 ## Debian and Ubuntu proxy
 ## Others?
 export PROXY_USER=proxy
@@ -59,13 +60,18 @@ fi
 
 tar xf "${BUILDZONE}/${SOURCES_FILENAME}" -C "${BUILDZONE}/"
 
+export SOURCES_VERSION=$(echo ${SOURCES_FILENAME} |sed -e 's@\.tar\.bz2$@@g'  |sed -e 's@\.tar\.gz$@@g'|sed -e 's@\.tar\.xz$@@g'|sed -e 's@\.tar$@@g')
+
+## Patch
+cd "${BUILDZONE}/${SOURCES_VERSION}"
+find "${PATCHES_DIR}" -name "*.patch" -exec bash -c "patch -p -u < {}" \;
+##
+
 cd "${BUILDZONE}/confdir"
 pwd
 
-export SOURCES_VERSION=$(echo ${SOURCES_FILENAME} |sed -e 's@\.tar\.bz2$@@g'  |sed -e 's@\.tar\.gz$@@g'|sed -e 's@\.tar\.xz$@@g'|sed -e 's@\.tar$@@g')
-
-if [[ -d "${BUILDZONE}/$SOURCES_VERSION}" ]]; then
-	echo "${BUILDZONE}/$SOURCES_VERSION}"
+if [[ -d "${BUILDZONE}/${SOURCES_VERSION}" ]]; then
+	echo "${BUILDZONE}/${SOURCES_VERSION}"
 fi
 
 ${BUILDZONE}/${SOURCES_VERSION}/configure \
