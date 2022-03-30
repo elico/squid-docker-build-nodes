@@ -86,6 +86,10 @@ fi
 cp -v "/srv/SOURCES/"* "${BUILDZONE}/SOURCES/"
 cp -v "/srv/SPECS/"* "${BUILDZONE}/SPECS/"
 
+rpmbuild --define '_topdir '${BUILDZONE} --define "_smp_mflags -j${CPU_COUNT}" -ba -vv "${BUILDZONE}/SPECS/dummy-ffmpeg.spec"
+cp -v "${BUILDZONE}/RPMS/"*"/"* "${PACKAGES_DEST}/"
+cp -v "${BUILDZONE}/SRPMS/"* "${PACKAGES_DEST}/"
+
 rpmbuild --define '_topdir '${BUILDZONE} --define "_smp_mflags -j${CPU_COUNT}" -ba -vv "${BUILDZONE}/SPECS/${SPEC_FILE}"
 
 cp -v "${BUILDZONE}/RPMS/"*"/"* "${PACKAGES_DEST}/"
