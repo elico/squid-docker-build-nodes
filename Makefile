@@ -157,57 +157,60 @@ clean-packages:
 clean-build-flags:
 	bash clean-packages.sh build
 
+clean-all-containers: clean-debian-container clean-oracle-containers clean-amzn-containers clean-ubuntu-containers clean-fedora-containers clean-centos-containers
+
 clean-centos-containers: clean-centos-7-container clean-centos-8-container
 
 clean-centos-7-container:
-	podman rmi squidbuild:centos7 -f
+	podman rmi squidbuild:centos7 -f;true
 
 clean-centos-8-container:
-	podman rmi squidbuild:centos8 -f
+	podman rmi squidbuild:centos8 -f;true
 
 clean-fedora-containers: clean-fedora-33-container 
 
 clean-fedora-33-container:
-	podman rmi squidbuild:fedora33 -f
+	podman rmi squidbuild:fedora33 -f;true
 
 
 clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container
 
 clean-ubuntu-16.04-container:
-	podman rmi squidbuild:centos1604 -f
+	podman rmi squidbuild:centos1604 -f;true
 
 clean-ubuntu-18.04-container:
-	podman rmi squidbuild:centos1804 -f
+	podman rmi squidbuild:centos1804 -f;true
 
 clean-ubuntu-20.04-container:
-	podman rmi squidbuild:centos2004 -f
+	podman rmi squidbuild:centos2004 -f;true
 
 
 clean-amzn-containers: clean-amzn-1-container clean-amzn-2-container
 
 clean-amzn-1-container:
-	podman rmi squidbuild:amzn1 -f
+	podman rmi squidbuild:amzn1 -f;true
 
 clean-amzn-2-container:
-	podman rmi squidbuild:amzn2 -f
+	podman rmi squidbuild:amzn2 -f;true
 
 
 clean-oracle-containers: clean-oracle-7-container clean-oracle-8-container
 
 clean-oracle-7-container:
-	podman rmi squidbuild:ol7 -f
+	podman rmi squidbuild:ol7 -f;true
 
 clean-oracle-8-container:
-	podman rmi squidbuild:ol8 -f
+	podman rmi squidbuild:ol8 -f;true
 
 
 clean-debian-container: clean-debian-9-container clean-debian-10-container
 
 clean-debian-10-container:
-	podman rmi squidbuild:debian10 -f
+	podman rmi squidbuild:debian10 -f;true
 
 clean-debian-9-container:
-	podman rmi squidbuild:debian9 -f
+	podman rmi squidbuild:debian9 -f;true
+
 
 fetch-podman-images: fetch-oracle-images fetch-centos-images fetch-amzn-images fetch-debian-images fetch-ubuntu-images
 

@@ -1,4 +1,4 @@
-FROM centos:8
+FROM centos:stream8 
 
 RUN dnf install -y epel-release dnf-plugins-core \
    &&  dnf config-manager --set-enabled powertools \
