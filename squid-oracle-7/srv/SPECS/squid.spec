@@ -24,12 +24,18 @@ Source7:  squid.service
 Source8:  squidshut.sh
 
 Patch0:   pinger_off_v4.patch
-Patch1:   suspendbyoptionsonly.patch
-Patch2:   default_visible_hostname.patch
-Patch3:   050-disable-intercept-host-header-forgery.patch
-Patch4:   050-disable-intercept-host-header-forgery-5.4_1.patch
-Patch5:   050-disable-intercept-host-header-forgery-5.4_2.patch
-Patch6:   050-disable-intercept-host-header-forgery-5.4_3.patch
+Patch1:   default_visible_hostname.patch
+
+Patch2:   050-disable-intercept-host-header-forgery.patch
+
+Patch3:   050-disable-intercept-host-header-forgery-5.4_1.patch
+Patch4:   050-disable-intercept-host-header-forgery-5.4_2.patch
+Patch5:   050-disable-intercept-host-header-forgery-5.4_3.patch
+
+Patch6:   v6-host-strictct-verify-1-of-3.patch
+Patch7:   v6-host-strictct-verify-2-of-3.patch
+Patch8:   v6-host-strictct-verify-3-of-3.patch
+Patch9:   v6-aclreg.cc-fix.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
@@ -107,20 +113,32 @@ The squid-helpers contains the external helpers.
 %setup -q
 %patch0
 %patch1
-%patch2
 
 %if "%{version_number}" < "5.0"
 
-%patch3
+%patch2
 
-%else
-
-%patch4
-%patch5
-%patch6
 
 %endif
 
+%if "%{version_number}" > "5.0" && "%{version_number}" < "6.0"
+
+%patch3
+%patch4
+%patch5
+
+
+%endif
+
+%if "%{version_number}" > "6.0" && "%{version_number}" < "7.0"
+
+%patch9
+
+%patch6
+%patch7
+%patch8
+
+%endif
 %build
 ## the next if was causing selinux issues that was mentioned in the redhat bugzilla
 #%ifarch sparcv9 sparc64 s390 s390x

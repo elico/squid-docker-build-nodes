@@ -8,7 +8,6 @@ endif
 
 all: touch-all-build-flags build
 
-
 install-fedora-deps:
 	cat fedora-build-deps |head -2 |xargs -l2 dnf install -y
 
@@ -31,10 +30,15 @@ centos7: build-centos-7
 centos8: build-centos-8
 
 build-fedora-33: clean-build-flags touch-fedora-33-flags build 
+build-fedora-35: clean-build-flags touch-fedora-35-flags build 
 
-fedora: fedora-33
+
+fedora: fedora-33 fedora-35
 
 fedora-33: build-fedora-33
+
+fedora-35: build-fedora-35
+
 
 
 
@@ -94,10 +98,13 @@ touch-centos-7-flags:
 touch-centos-8-flags:
 	touch ./squid-centos-8/build
 
-touch-fedora-flags: touch-fedora-33-flags
+touch-fedora-flags: touch-fedora-33-flags touch-fedora-35-flags
 
 touch-fedora-33-flags:
 	touch ./squid-fedora-33/build
+
+touch-fedora-35-flags:
+	touch ./squid-fedora-35/build
 
 
 touch-amzn-flags: touch-amzn-1-flags touch-amzn-2-flags
@@ -167,10 +174,13 @@ clean-centos-7-container:
 clean-centos-8-container:
 	podman rmi squidbuild:centos8 -f;true
 
-clean-fedora-containers: clean-fedora-33-container 
+clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container
 
 clean-fedora-33-container:
 	podman rmi squidbuild:fedora33 -f;true
+
+clean-fedora-35-container:
+	podman rmi squidbuild:fedora35 -f;true
 
 
 clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container
@@ -351,7 +361,7 @@ deploy-amzn-2-beta-packages:
 	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/beta/x86_64/
 	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/beta/SRPMS/
 
-deploy-fedora-packages: deploy-fedora-33-packages
+deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages
 
 deploy-fedora-33-packages:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
@@ -359,6 +369,11 @@ deploy-fedora-33-packages:
 	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/33/x86_64/
 	cp -v squid-fedora-33/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/33/SRPMS/
 
+deploy-fedora-35-packages:
+	mkdir -p $(REPO_ROOT)/fedora/35/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/35/SRPMS
+	cp -v squid-fedora-35/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/35/x86_64/
+	cp -v squid-fedora-35/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/35/SRPMS/
 
 create-repo-centos: create-repo-centos7 create-repo-centos8
 
@@ -489,3 +504,5 @@ clean-rpms-packages:
 	rm -vf squid-oracle-8/srv/packages/*.rpm 
 	rm -vf squid-amzn-1/srv/packages/*.rpm
 	rm -vf squid-amzn-2/srv/packages/*.rpm
+	rm -vf squid-fedora-33/srv/packages/*.rpm
+	rm -vf squid-fedora-35/srv/packages/*.rpm
