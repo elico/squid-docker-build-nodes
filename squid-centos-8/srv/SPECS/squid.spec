@@ -35,6 +35,8 @@ Patch7:   v6-host-strictct-verify-3-of-3.patch
 
 Patch8:   v6-aclreg.cc-fix.patch
 
+Patch9:   050-disable-intercept-host-header-forgery-5.6_3.patch
+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
 Requires(pre): shadow-utils
@@ -98,7 +100,18 @@ lookup program (dnsserver), a program for retrieving FTP data
 
 %patch2
 %patch3
+
+%if "%{version_number}" > "5.0" && "%{version_number}" < "5.6"
+
 %patch4
+
+%endif
+
+%if "%{version_number}" > "5.0" && "%{version_number}" > "5.5"
+
+%patch9
+
+%endif
 
 %endif
 

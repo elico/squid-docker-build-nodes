@@ -11,7 +11,7 @@ all: touch-all-build-flags build
 install-fedora-deps:
 	cat fedora-build-deps |head -2 |xargs -l2 dnf install -y
 
-build-rpms: clean-build-flags touch-centos-flags touch-oracle-flags touch-amzn-2-flags build
+build-rpms: clean-build-flags touch-centos-flags touch-oracle-flags touch-amzn-2-flags touch-fedora-flags build
 
 centos: build-centos
 
@@ -29,11 +29,15 @@ centos7: build-centos-7
 
 centos8: build-centos-8
 
+
 build-fedora-33: clean-build-flags touch-fedora-33-flags build 
+
 build-fedora-35: clean-build-flags touch-fedora-35-flags build 
 
+build-fedora: fedora
 
-fedora: fedora-33 fedora-35
+
+fedora: clean-build-flags touch-fedora-flags build
 
 fedora-33: build-fedora-33
 
@@ -66,6 +70,9 @@ build-ubuntu-18.04: clean-build-flags touch-ubuntu-18.04-flags build
 
 build-ubuntu-20.04: clean-build-flags touch-ubuntu-20.04-flags build 
 
+build-ubuntu-22.04: clean-build-flags touch-ubuntu-22.04-flags build 
+
+
 debian: build-debian
 
 build-debian: clean-build-flags touch-debian-flags build 
@@ -74,9 +81,14 @@ build-debian-9: clean-build-flags touch-debian-9-flags build
 
 build-debian-10: clean-build-flags touch-debian-10-flags build 
 
+build-debian-11: clean-build-flags touch-debian-11-flags build 
+
 debian-9: build-debian-9
 
 debian-10: build-debian-10
+
+debian-11: build-debian-11
+
 
 
 build-amzn: clean-build-flags touch-amzn-flags build 
@@ -126,7 +138,7 @@ touch-oracle-8-flags:
 	touch ./squid-oracle-8/build
 
 
-touch-debian-flags: touch-debian-9-flags touch-debian-10-flags
+touch-debian-flags: touch-debian-9-flags touch-debian-10-flags touch-debian-11-flags
 
 touch-debian-9-flags:
 	touch ./squid-debian9/build
@@ -134,8 +146,11 @@ touch-debian-9-flags:
 touch-debian-10-flags:
 	touch ./squid-debian10/build
 
+touch-debian-11-flags:
+	touch ./squid-debian11/build
 
-touch-ubuntu-flags: touch-ubuntu-16.04-flags touch-ubuntu-18.04-flags touch-ubuntu-20.04-flags
+
+touch-ubuntu-flags: touch-ubuntu-16.04-flags touch-ubuntu-18.04-flags touch-ubuntu-20.04-flags touch-ubuntu-22.04-flags
 
 touch-ubuntu-16.04-flags:
 	touch ./squid-ubuntu1604/build
@@ -146,6 +161,8 @@ touch-ubuntu-18.04-flags:
 touch-ubuntu-20.04-flags:
 	touch ./squid-ubuntu2004/build
 
+touch-ubuntu-22.04-flags:
+	touch ./squid-ubuntu2204/build
 
 touch-all-build-flags: touch-fedora-flags touch-centos-flags touch-amzn-flags touch-oracle-flags touch-debian-flags touch-ubuntu-flags 
 	echo 1
@@ -183,17 +200,19 @@ clean-fedora-35-container:
 	podman rmi squidbuild:fedora35 -f;true
 
 
-clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container
+clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container  clean-ubuntu-22.04-container
 
 clean-ubuntu-16.04-container:
-	podman rmi squidbuild:centos1604 -f;true
+	podman rmi squidbuild:ubuntu1604 -f;true
 
 clean-ubuntu-18.04-container:
-	podman rmi squidbuild:centos1804 -f;true
+	podman rmi squidbuild:ubuntu1804 -f;true
 
 clean-ubuntu-20.04-container:
-	podman rmi squidbuild:centos2004 -f;true
+	podman rmi squidbuild:ubuntu2004 -f;true
 
+clean-ubuntu-22.04-container:
+	podman rmi squidbuild:ubuntu2204 -f;true
 
 clean-amzn-containers: clean-amzn-1-container clean-amzn-2-container
 
@@ -213,7 +232,10 @@ clean-oracle-8-container:
 	podman rmi squidbuild:ol8 -f;true
 
 
-clean-debian-container: clean-debian-9-container clean-debian-10-container
+clean-debian-container: clean-debian-9-container clean-debian-10-container clean-debian-11-container
+
+clean-debian-11-container:
+	podman rmi squidbuild:debian11 -f;true
 
 clean-debian-10-container:
 	podman rmi squidbuild:debian10 -f;true
@@ -240,7 +262,7 @@ fetch-centos-7-image:
 fetch-centos-8-image:
 	podman pull centos:8
 
-fetch-debian-images: fetch-debian-9-image fetch-debian-10-image
+fetch-debian-images: fetch-debian-9-image fetch-debian-10-image fetch-debian-11-image
 
 fetch-debian-9-image:
 	podman pull debian:stretch
@@ -248,11 +270,17 @@ fetch-debian-9-image:
 fetch-debian-10-image:
 	podman pull debian:buster
 
+fetch-debian-11-image:
+	podman pull debian:bullseye
 
-fetch-ubuntu-images: fetch-ubuntu-16.04-image fetch-ubuntu-18.04-image fetch-ubuntu-20.04-image
+
+fetch-ubuntu-images: fetch-ubuntu-16.04-image fetch-ubuntu-18.04-image fetch-ubuntu-20.04-image fetch-ubuntu-22.04-image
 
 fetch-ubuntu-20.04-image:
 	podman pull ubuntu:20.04
+
+fetch-ubuntu-22.04-image:
+	podman pull ubuntu:22.04
 
 fetch-ubuntu-18.04-image:
 	podman pull ubuntu:18.04
@@ -287,6 +315,7 @@ deploy-centos-8-packages:
 	mkdir -p $(REPO_ROOT)/centos/8/SRPMS
 	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/x86_64/
 	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/SRPMS/
+
 
 
 deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta-packages
@@ -347,7 +376,10 @@ deploy-amzn-2-packages:
 	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/x86_64/
 	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/SRPMS/
 
-deploy-amzn-beta-packages: deploy-amzn-1-beta-packages  deploy-amzn-2-beta-packages
+deploy-beta-packages: deploy-centos-beta-packages deploy-oracle-beta-packages deploy-amzn-beta-packages  deploy-fedora-beta-packages
+
+
+deploy-amzn-beta-packages: deploy-amzn-2-beta-packages
 
 deploy-amzn-1-beta-packages:
 	mkdir -p $(REPO_ROOT)/amzn/1/beta/x86_64
@@ -375,6 +407,20 @@ deploy-fedora-35-packages:
 	cp -v squid-fedora-35/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/35/x86_64/
 	cp -v squid-fedora-35/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/35/SRPMS/
 
+deploy-fedora-beta-packages: deploy-fedora-33-beta-packages deploy-fedora-35-beta-packages
+
+deploy-fedora-33-beta-packages:
+	mkdir -p $(REPO_ROOT)/fedora/33/beta/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/33/beta/SRPMS
+	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/33/beta/x86_64/
+	cp -v squid-fedora-33/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/33/beta/SRPMS/
+
+deploy-fedora-35-beta-packages:
+	mkdir -p $(REPO_ROOT)/fedora/35/beta/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/35/beta/SRPMS
+	cp -v squid-fedora-35/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/35/beta/x86_64/
+	cp -v squid-fedora-35/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/35/beta/SRPMS/
+
 create-repo-centos: create-repo-centos7 create-repo-centos8
 
 create-repo-centos7:
@@ -387,7 +433,9 @@ create-repo-centos8:
 	cd $(REPO_ROOT)/centos/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/8
 
-create-beta-repo-centos: create-beta-repo-centos7 create-beta-repo-centos8
+create-beta-repos: create-beta-repo-centos create-beta-repo-oracle create-beta-repo-fedora create-beta-repo-amzn
+
+create-beta-repo-centos: create-beta-repo-centos7 create-beta-repo-centos8 
 
 create-beta-repo-centos7:
 	cd $(REPO_ROOT)/centos/7/beta/SRPMS && createrepo ./
@@ -447,6 +495,29 @@ create-beta-repo-amzn2:
 	cd $(REPO_ROOT)/amzn/2/beta/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/amzn/2/beta
 
+creare-repo-fedora: create-fedora-33-packages create-fedora-35-packages
+
+create-fedora-33-packages:
+	cd $(REPO_ROOT)/fedora/33/x86_64 && createrepo ./
+	cd $(REPO_ROOT)/fedora/33/SRPMS && createrepo ./
+	touch $(REPO_ROOT)/fedora/33
+
+create-fedora-35-packages:
+	cd $(REPO_ROOT)/fedora/35/x86_64 && createrepo ./
+	cd $(REPO_ROOT)/fedora/35/SRPMS && createrepo ./
+	touch $(REPO_ROOT)/fedora/35
+
+create-beta-repo-fedora:create-fedora-33-beta-packages create-fedora-35-beta-packages
+
+create-fedora-33-beta-packages:
+	cd $(REPO_ROOT)/fedora/33/beta/x86_64 && createrepo ./
+	cd $(REPO_ROOT)/fedora/33/beta/SRPMS && createrepo ./
+	touch $(REPO_ROOT)/fedora/33/beta
+
+create-fedora-35-beta-packages:
+	cd $(REPO_ROOT)/fedora/35/beta/x86_64 && createrepo ./
+	cd $(REPO_ROOT)/fedora/35/beta/SRPMS && createrepo ./
+	touch $(REPO_ROOT)/fedora/35/beta
 
 deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages
 
@@ -458,6 +529,14 @@ deploy-buster-packages: deploy-debian-10-packages
 deploy-debian-10-packages:
 	mkdir -p $(REPO_ROOT)/debian/10/x86_64
 	cp -v squid-debian10/srv/packages/*.tar $(REPO_ROOT)/debian/10/x86_64/
+
+deploy-debian-bullseye-packages: deploy-debian-11-packages
+
+deploy-bullseye-packages: deploy-debian-11-packages
+
+deploy-debian-11-packages:
+	mkdir -p $(REPO_ROOT)/debian/11/x86_64
+	cp -v squid-debian11/srv/packages/*.tar $(REPO_ROOT)/debian/11/x86_64/
 
 
 deploy-debian-jessie-packages: deploy-debian-9-packages
@@ -479,8 +558,6 @@ deploy-ubuntu-1604-packages:
 	mkdir -p $(REPO_ROOT)/ubuntu/16.04/x86_64
 	cp -v squid-ubuntu1604/srv/packages/*.tar $(REPO_ROOT)/ubuntu/16.04/x86_64/
 
-deploy-ubuntu-packages: deploy-ubuntu-1804-packages
-
 deploy-1804-packages: deploy-ubuntu-1804-packages
 
 deploy-ubuntu-1804-packages:
@@ -488,14 +565,17 @@ deploy-ubuntu-1804-packages:
 	cp -v squid-ubuntu1804/srv/packages/*.tar $(REPO_ROOT)/ubuntu/18.04/x86_64/
 
 
-deploy-ubuntu-packages: deploy-ubuntu-2004-packages
-
 deploy-2004-packages: deploy-ubuntu-2004-packages
 
 deploy-ubuntu-2004-packages:
 	mkdir -p $(REPO_ROOT)/ubuntu/20.04/x86_64
 	cp -v squid-ubuntu2004/srv/packages/*.tar $(REPO_ROOT)/ubuntu/20.04/x86_64/
 
+deploy-2204-packages: deploy-ubuntu-2204-packages
+
+deploy-ubuntu-2204-packages:
+	mkdir -p $(REPO_ROOT)/ubuntu/22.04/x86_64
+	cp -v squid-ubuntu2204/srv/packages/*.tar $(REPO_ROOT)/ubuntu/22.04/x86_64/
 
 clean-rpms-packages:
 	rm -vf squid-centos-7/srv/packages/*.rpm 
