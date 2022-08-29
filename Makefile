@@ -48,6 +48,12 @@ build-almalinux-9: clean-build-flags touch-almalinux-9-flags build
 
 
 
+build-rockylinux: clean-build-flags touch-rockylinux-8-flags build
+
+build-rockylinux-8: clean-build-flags touch-rockylinux-8-flags build
+
+
+
 build-fedora-33: clean-build-flags touch-fedora-33-flags build 
 
 build-fedora-35: clean-build-flags touch-fedora-35-flags build 
@@ -140,6 +146,8 @@ touch-fedora-33-flags:
 touch-fedora-35-flags:
 	touch ./squid-fedora-35/build
 
+
+
 touch-almalinux-flags: touch-almalinux-8-flags touch-almalinux-9-flags 
 
 touch-almalinux-8-flags:
@@ -149,6 +157,10 @@ touch-almalinux-9-flags:
 	touch ./squid-almalinux-9/build
 
 
+touch-rockylinux-flags: touch-rockylinux-8-flags
+
+touch-rockylinux-8-flags:
+	touch ./squid-rockylinux-8/build
 
 
 touch-amzn-flags: touch-amzn-1-flags touch-amzn-2-flags
@@ -399,6 +411,15 @@ deploy-almalinux-9-packages:
 	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/
 
 
+deploy-rocky-packages: deploy-rockylinux-8-packages
+
+deploy-rockylinux-8-packages:
+	mkdir -p $(REPO_ROOT)/rocky/8/x86_64
+	mkdir -p $(REPO_ROOT)/rocky/8/SRPMS
+	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/x86_64/
+	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/SRPMS/
+
+
 deploy-oracle-packages: deploy-oracle-7-packages  deploy-oracle-8-packages
 
 deploy-oracle-7-packages:
@@ -500,7 +521,7 @@ create-repo-centos8:
 	touch $(REPO_ROOT)/centos/8
 
 
-create-repo-almalinux: reate-repo-alma
+create-repo-almalinux: create-repo-alma
 
 create-repo-alma: create-repo-alma8 create-repo-alma9
 
@@ -513,6 +534,16 @@ create-repo-alma9:
 	cd $(REPO_ROOT)/alma/9/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/alma/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/alma/9
+
+create-repo-rockylinux: create-repo-rocky
+
+create-repo-rocky: create-repo-rocky8
+
+create-repo-rocky8:
+	cd $(REPO_ROOT)/rocky/8/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/rocky/8/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/rocky/8
+
 
 create-beta-repos: create-beta-repo-centos create-beta-repo-oracle create-beta-repo-fedora create-beta-repo-amzn
 
