@@ -11,7 +11,7 @@ all: touch-all-build-flags build
 install-fedora-deps:
 	cat fedora-build-deps |head -2 |xargs -l2 dnf install -y
 
-build-rpms: clean-build-flags touch-centos-flags touch-oracle-flags touch-amzn-2-flags touch-fedora-flags build
+build-rpms: clean-build-flags touch-centos-flags touch-oracle-flags touch-amzn-2-flags touch-fedora-flags touch-almalinux-flags touch-rockylinux-flags build
 
 centos: build-centos
 
@@ -148,7 +148,7 @@ touch-fedora-35-flags:
 
 
 
-touch-almalinux-flags: touch-almalinux-8-flags touch-almalinux-9-flags 
+touch-almalinux-flags: touch-almalinux-8-flags #touch-almalinux-9-flags 
 
 touch-almalinux-8-flags:
 	touch ./squid-almalinux-8/build
@@ -351,7 +351,7 @@ fetch-amzn-2-image:
 
 deploy-packages:
 
-deploy-rpms: deploy-centos-packages deploy-oracle-packages deploy-amzn-2-packages
+deploy-rpms: deploy-centos-packages deploy-oracle-packages deploy-amzn-2-packages deploy-almalinux-packages deploy-rockylinux-packages
 
 
 deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages
@@ -396,7 +396,7 @@ deploy-centos-9-beta-packages:
 	cp -v squid-centos-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/9/beta/x86_64/
 	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/beta/SRPMS/
 
-deploy-almalinux-packages: deploy-almalinux-8-packages deploy-almalinux-9-packages
+deploy-almalinux-packages: deploy-almalinux-8-packages #deploy-almalinux-9-packages
 
 deploy-almalinux-8-packages:
 	mkdir -p $(REPO_ROOT)/alma/8/x86_64
