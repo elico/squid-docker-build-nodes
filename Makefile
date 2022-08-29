@@ -21,13 +21,31 @@ build-centos-7: clean-build-flags touch-centos-7-flags build
 
 build-centos-8: clean-build-flags touch-centos-8-flags build 
 
+build-centos-9: clean-build-flags touch-centos-9-flags build 
+
 centos-7: build-centos-7
 
 centos-8: build-centos-8
 
+centos-9: build-centos-9
+
 centos7: build-centos-7
 
 centos8: build-centos-8
+
+centos9: build-centos-9
+
+
+build-almalinux: clean-build-flags touch-almalinux-8-flags touch-almalinux-9-flags build
+
+almalinux8: build-almalinux-8
+
+almalinux9: build-almalinux-9
+
+build-almalinux-8: clean-build-flags touch-almalinux-8-flags build
+
+build-almalinux-9: clean-build-flags touch-almalinux-9-flags build
+
 
 
 build-fedora-33: clean-build-flags touch-fedora-33-flags build 
@@ -102,13 +120,17 @@ amzn-1: build-amzn-1
 amzn-2: build-amzn-2
 
 
-touch-centos-flags: touch-centos-7-flags touch-centos-8-flags
+touch-centos-flags: touch-centos-7-flags touch-centos-8-flags 
+#touch-centos-9-flags
 
 touch-centos-7-flags:
 	touch ./squid-centos-7/build
 
 touch-centos-8-flags:
 	touch ./squid-centos-8/build
+
+touch-centos-9-flags:
+	touch ./squid-centos-9/build
 
 touch-fedora-flags: touch-fedora-33-flags touch-fedora-35-flags
 
@@ -117,6 +139,16 @@ touch-fedora-33-flags:
 
 touch-fedora-35-flags:
 	touch ./squid-fedora-35/build
+
+touch-almalinux-flags: touch-almalinux-8-flags touch-almalinux-9-flags 
+
+touch-almalinux-8-flags:
+	touch ./squid-almalinux-8/build
+
+touch-almalinux-9-flags:
+	touch ./squid-almalinux-9/build
+
+
 
 
 touch-amzn-flags: touch-amzn-1-flags touch-amzn-2-flags
@@ -183,13 +215,16 @@ clean-build-flags:
 
 clean-all-containers: clean-debian-container clean-oracle-containers clean-amzn-containers clean-ubuntu-containers clean-fedora-containers clean-centos-containers
 
-clean-centos-containers: clean-centos-7-container clean-centos-8-container
+clean-centos-containers: clean-centos-7-container clean-centos-8-container clean-centos-9-container
 
 clean-centos-7-container:
 	podman rmi squidbuild:centos7 -f;true
 
 clean-centos-8-container:
 	podman rmi squidbuild:centos8 -f;true
+
+clean-centos-9-container:
+	podman rmi squidbuild:centos9 -f;true
 
 clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container
 
@@ -255,12 +290,17 @@ fetch-oracle-8-image:
 	podman pull oraclelinux:8
 
 
-fetch-centos-images:  fetch-centos-7-image fetch-centos-8-image
+fetch-centos-images:  fetch-centos-7-image fetch-centos-8-image fetch-centos-9-image
 
 fetch-centos-7-image:
 	podman pull centos:7
+
 fetch-centos-8-image:
-	podman pull centos:8
+	podman pull centos:stream8
+
+fetch-centos-9-image:
+	podman pull centos:stream9
+
 
 fetch-debian-images: fetch-debian-9-image fetch-debian-10-image fetch-debian-11-image
 
@@ -303,6 +343,7 @@ deploy-rpms: deploy-centos-packages deploy-oracle-packages deploy-amzn-2-package
 
 
 deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages
+# deploy-centos-9-packages
 
 deploy-centos-7-packages:
 	mkdir -p $(REPO_ROOT)/centos/7/x86_64
@@ -316,9 +357,14 @@ deploy-centos-8-packages:
 	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/x86_64/
 	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/SRPMS/
 
+deploy-centos-9-packages:
+	mkdir -p $(REPO_ROOT)/centos/9/x86_64
+	mkdir -p $(REPO_ROOT)/centos/9/SRPMS
+	cp -v squid-centos-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/9/x86_64/
+	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/SRPMS/
 
 
-deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta-packages
+deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta-packages deploy-centos-9-beta-packages
 
 deploy-centos-7-beta-packages:
 	mkdir -p $(REPO_ROOT)/centos/7/beta/x86_64
@@ -331,6 +377,26 @@ deploy-centos-8-beta-packages:
 	mkdir -p $(REPO_ROOT)/centos/8/beta/SRPMS
 	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/beta/x86_64/
 	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/beta/SRPMS/
+
+deploy-centos-9-beta-packages:
+	mkdir -p $(REPO_ROOT)/centos/9/beta/x86_64
+	mkdir -p $(REPO_ROOT)/centos/9/beta/SRPMS
+	cp -v squid-centos-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/9/beta/x86_64/
+	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/beta/SRPMS/
+
+deploy-almalinux-packages: deploy-almalinux-8-packages deploy-almalinux-9-packages
+
+deploy-almalinux-8-packages:
+	mkdir -p $(REPO_ROOT)/alma/8/x86_64
+	mkdir -p $(REPO_ROOT)/alma/8/SRPMS
+	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/x86_64/
+	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/SRPMS/
+
+deploy-almalinux-9-packages:
+	mkdir -p $(REPO_ROOT)/alma/9/x86_64
+	mkdir -p $(REPO_ROOT)/alma/9/SRPMS
+	cp -v squid-almalinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/9/x86_64/
+	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/
 
 
 deploy-oracle-packages: deploy-oracle-7-packages  deploy-oracle-8-packages
@@ -433,6 +499,21 @@ create-repo-centos8:
 	cd $(REPO_ROOT)/centos/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/8
 
+
+create-repo-almalinux: reate-repo-alma
+
+create-repo-alma: create-repo-alma8 create-repo-alma9
+
+create-repo-alma8:
+	cd $(REPO_ROOT)/alma/8/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/alma/8/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/alma/8
+
+create-repo-alma9:
+	cd $(REPO_ROOT)/alma/9/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/alma/9/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/alma/9
+
 create-beta-repos: create-beta-repo-centos create-beta-repo-oracle create-beta-repo-fedora create-beta-repo-amzn
 
 create-beta-repo-centos: create-beta-repo-centos7 create-beta-repo-centos8 
@@ -495,7 +576,7 @@ create-beta-repo-amzn2:
 	cd $(REPO_ROOT)/amzn/2/beta/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/amzn/2/beta
 
-creare-repo-fedora: create-fedora-33-packages create-fedora-35-packages
+create-repo-fedora: create-fedora-33-packages create-fedora-35-packages
 
 create-fedora-33-packages:
 	cd $(REPO_ROOT)/fedora/33/x86_64 && createrepo ./
@@ -580,6 +661,7 @@ deploy-ubuntu-2204-packages:
 clean-rpms-packages:
 	rm -vf squid-centos-7/srv/packages/*.rpm 
 	rm -vf squid-centos-8/srv/packages/*.rpm 
+	rm -vf squid-centos-9/srv/packages/*.rpm 
 	rm -vf squid-oracle-7/srv/packages/*.rpm 
 	rm -vf squid-oracle-8/srv/packages/*.rpm 
 	rm -vf squid-amzn-1/srv/packages/*.rpm
