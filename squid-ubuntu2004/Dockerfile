@@ -25,7 +25,7 @@ RUN useradd builder -u 1000 -m -G users,sudo \
    &&  echo "builder ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers \
    &&  chown -R builder /home/builder
 
-USER builder
+#USER builder
 
 ENV FLAVOR=deb OS=ubuntu DIST=focal
 
