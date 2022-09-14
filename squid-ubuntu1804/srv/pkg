@@ -29,9 +29,9 @@ export CPU_COUNT=$(grep processor /proc/cpuinfo | wc -l)
 export USER=$(whoami)
 
 cd ${BUILDZONE}
-sudo mkdir -p "${PACKAGES_DEST}"
-sudo chmod 777 "${PACKAGES_DEST}"
-sudo chown ${USER}: "${PACKAGES_DEST}"
+mkdir -p "${PACKAGES_DEST}"
+chmod 777 "${PACKAGES_DEST}"
+chown ${USER}: "${PACKAGES_DEST}"
 
 cp -v /srv/tostrip ${BUILDZONE}/tostrip
 
@@ -41,9 +41,9 @@ if [[ "${USE_CCACHE}" -eq "1" ]];then
 	ccache -s
 
 	if [[ ! -z "${CCACHE_DIR}" ]]; then
-		sudo mkdir -p "${CCACHE_DIR}"
-		sudo chmod 777 "${CCACHE_DIR}"
-		sudo chown -R "${USER}": "${CCACHE_DIR}"
+		mkdir -p "${CCACHE_DIR}"
+		chmod 777 "${CCACHE_DIR}"
+		chown -R "${USER}": "${CCACHE_DIR}"
 		export PATH=/usr/lib/ccache:${PATH}
 	fi
 
