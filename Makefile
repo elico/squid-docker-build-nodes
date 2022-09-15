@@ -11,6 +11,12 @@ all: touch-all-build-flags build
 install-fedora-deps:
 	cat fedora-build-deps |head -2 |xargs -l2 dnf install -y
 
+get-latest-url-from-gogs:
+	curl -s http://gogs.ngtech.home/NgTech-Home/squid-latest/raw/main/latest.json |jq -r .url > latest-squid-url.txt
+
+get-latest-url-from-github:
+	curl -s https://raw.githubusercontent.com/elico/squid-latest/main/latest.json |jq -r .url > latest-squid-url.txt
+
 build-rpms: clean-build-flags touch-centos-flags touch-oracle-flags touch-amzn-2-flags touch-fedora-flags touch-almalinux-flags touch-rockylinux-flags build
 
 centos: build-centos
