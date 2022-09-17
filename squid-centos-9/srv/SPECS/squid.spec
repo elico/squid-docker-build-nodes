@@ -36,7 +36,6 @@ Patch7:   v6-host-strictct-verify-3-of-3.patch
 Patch8:   v6-aclreg.cc-fix.patch
 
 Patch9:   050-disable-intercept-host-header-forgery-5.6_3.patch
-Patch10:  0006-Fix-build-against-OpenSSL-3-0.patch
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
@@ -123,12 +122,6 @@ lookup program (dnsserver), a program for retrieving FTP data
 %patch5
 %patch6
 %patch7
-
-%endif
-
-%if "%{version_number}" > "5.0"
-
-%patch10
 
 %endif
 

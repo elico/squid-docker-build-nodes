@@ -6,7 +6,10 @@ ifeq ($(REPO_ROOT),)
 REPO_ROOT := "/mnt/staging_repo"
 endif
 
-all: touch-all-build-flags build
+all: 
+	echo OK
+
+build-all: build-oracle build-centos build-amzn build-alma build-rocky build-debian build-ubuntu
 
 install-fedora-deps:
 	cat fedora-build-deps |head -2 |xargs -l2 dnf install -y
@@ -17,17 +20,20 @@ get-latest-url-from-gogs:
 get-latest-url-from-github:
 	curl -s https://raw.githubusercontent.com/elico/squid-latest/main/latest.json |jq -r .url > latest-squid-url.txt
 
-build-rpms: clean-build-flags touch-centos-flags touch-oracle-flags touch-amzn-2-flags touch-fedora-flags touch-almalinux-flags touch-rockylinux-flags build
+build-rpms: build-oracle build-centos build-amzn build-alma build-rocky
 
 centos: build-centos
 
-build-centos: clean-build-flags touch-centos-flags build 
+build-centos: build-centos-7 build-centos-8 build-centos-9
 
-build-centos-7: clean-build-flags touch-centos-7-flags build 
+build-centos-7: 
+	bash build.sh squid-centos-7
 
-build-centos-8: clean-build-flags touch-centos-8-flags build 
+build-centos-8: 
+	bash build.sh squid-centos-8
 
-build-centos-9: clean-build-flags touch-centos-9-flags build 
+build-centos-9: 
+	bash build.sh squid-centos-9
 
 centos-7: build-centos-7
 
@@ -42,45 +48,57 @@ centos8: build-centos-8
 centos9: build-centos-9
 
 
-build-almalinux: clean-build-flags touch-almalinux-8-flags touch-almalinux-9-flags build
+build-almalinux: build-almalinux-8 build-almalinux-9
 
 almalinux8: build-almalinux-8
 
 almalinux9: build-almalinux-9
 
-build-almalinux-8: clean-build-flags touch-almalinux-8-flags build
+build-almalinux-8:
+	bash build.sh squid-almalinux-8
 
-build-almalinux-9: clean-build-flags touch-almalinux-9-flags build
+build-almalinux-9:
+	bash build.sh squid-almalinux-9
 
+build-alma: build-almalinux
 
+build-rockylinux: build-rockylinux-8 build-rockylinux-9
 
-build-rockylinux: clean-build-flags touch-rockylinux-8-flags build
+build-rockylinux-8:
+	bash build.sh squid-rockylinux-8
 
-build-rockylinux-8: clean-build-flags touch-rockylinux-8-flags build
+build-rockylinux-9:
+	bash build.sh squid-rockylinux-9
 
+build-rocky: build-rockylinux
 
+build-fedora: build-fedora-33 build-fedora-35 build-fedora-36
 
-build-fedora-33: clean-build-flags touch-fedora-33-flags build 
+build-fedora-33:
+	bash build.sh squid-fedora-33
 
-build-fedora-35: clean-build-flags touch-fedora-35-flags build 
+build-fedora-35:
+	bash build.sh squid-fedora-35
 
-build-fedora: fedora
+build-fedora-36:
+	bash build.sh squid-fedora-36
 
-
-fedora: clean-build-flags touch-fedora-flags build
+fedora: build-fedora
 
 fedora-33: build-fedora-33
 
 fedora-35: build-fedora-35
 
+fedora-36: build-fedora-36
 
 
+build-oracle: build-oracle-7 build-oracle-8 
 
-build-oracle: clean-build-flags touch-oracle-flags build 
+build-oracle-7: 
+	bash build.sh squid-oracle-7
 
-build-oracle-7: clean-build-flags touch-oracle-7-flags build 
-
-build-oracle-8: clean-build-flags touch-oracle-8-flags build 
+build-oracle-8:
+	bash build.sh squid-oracle-8
 
 oracle-7: build-oracle-7
 
@@ -92,26 +110,33 @@ oracle8: build-oracle-8
 
 ubuntu: build-ubuntu
  
-build-ubuntu: clean-build-flags touch-ubuntu-flags build 
+build-ubuntu: build-ubuntu-16.04 build-ubuntu-18.04 build-ubuntu-20.04 build-ubuntu-22.04
 
-build-ubuntu-16.04: clean-build-flags touch-ubuntu-16.04-flags build 
+build-ubuntu-16.04:
+	bash build.sh squid-ubuntu1604 
 
-build-ubuntu-18.04: clean-build-flags touch-ubuntu-18.04-flags build 
+build-ubuntu-18.04: 
+	bash build.sh squid-ubuntu1804 
 
-build-ubuntu-20.04: clean-build-flags touch-ubuntu-20.04-flags build 
+build-ubuntu-20.04: 
+	bash build.sh squid-ubuntu2004 
 
-build-ubuntu-22.04: clean-build-flags touch-ubuntu-22.04-flags build 
+build-ubuntu-22.04:
+	bash build.sh squid-ubuntu2204 
 
 
 debian: build-debian
 
-build-debian: clean-build-flags touch-debian-flags build 
+build-debian: build-debian-9 build-debian-10 build-debian-11
 
-build-debian-9: clean-build-flags touch-debian-9-flags build 
+build-debian-9: 
+	bash build.sh squid-debian9
 
-build-debian-10: clean-build-flags touch-debian-10-flags build 
+build-debian-10: 
+	bash build.sh squid-debian10
 
-build-debian-11: clean-build-flags touch-debian-11-flags build 
+build-debian-11:
+	bash build.sh squid-debian11
 
 debian-9: build-debian-9
 
@@ -121,104 +146,18 @@ debian-11: build-debian-11
 
 
 
-build-amzn: clean-build-flags touch-amzn-flags build 
+build-amzn: build-amzn-1 build-amzn-2
 
-build-amzn-1: clean-build-flags touch-amzn-1-flags build 
+build-amzn-1: 
+	bash build.sh squid-amzn-1
 
-build-amzn-2: clean-build-flags touch-amzn-2-flags build 
+build-amzn-2:
+	bash build.sh squid-amzn-2
 
 amzn-1: build-amzn-1
 
 amzn-2: build-amzn-2
 
-
-touch-centos-flags: touch-centos-7-flags touch-centos-8-flags 
-#touch-centos-9-flags
-
-touch-centos-7-flags:
-	touch ./squid-centos-7/build
-
-touch-centos-8-flags:
-	touch ./squid-centos-8/build
-
-touch-centos-9-flags:
-	touch ./squid-centos-9/build
-
-touch-fedora-flags: touch-fedora-33-flags touch-fedora-35-flags
-
-touch-fedora-33-flags:
-	touch ./squid-fedora-33/build
-
-touch-fedora-35-flags:
-	touch ./squid-fedora-35/build
-
-
-
-touch-almalinux-flags: touch-almalinux-8-flags #touch-almalinux-9-flags 
-
-touch-almalinux-8-flags:
-	touch ./squid-almalinux-8/build
-
-touch-almalinux-9-flags:
-	touch ./squid-almalinux-9/build
-
-
-touch-rockylinux-flags: touch-rockylinux-8-flags
-
-touch-rockylinux-8-flags:
-	touch ./squid-rockylinux-8/build
-
-
-touch-amzn-flags: touch-amzn-1-flags touch-amzn-2-flags
-
-touch-amzn-1-flags:
-	touch ./squid-amzn-1/build
-
-touch-amzn-2-flags:
-	touch ./squid-amzn-2/build
-
-
-touch-oracle-flags: touch-oracle-7-flags touch-oracle-8-flags
-
-
-touch-oracle-7-flags:
-	touch ./squid-oracle-7/build
-
-touch-oracle-8-flags:
-	touch ./squid-oracle-8/build
-
-
-touch-debian-flags: touch-debian-9-flags touch-debian-10-flags touch-debian-11-flags
-
-touch-debian-9-flags:
-	touch ./squid-debian9/build
-
-touch-debian-10-flags:
-	touch ./squid-debian10/build
-
-touch-debian-11-flags:
-	touch ./squid-debian11/build
-
-
-touch-ubuntu-flags: touch-ubuntu-16.04-flags touch-ubuntu-18.04-flags touch-ubuntu-20.04-flags touch-ubuntu-22.04-flags
-
-touch-ubuntu-16.04-flags:
-	touch ./squid-ubuntu1604/build
-
-touch-ubuntu-18.04-flags:
-	touch ./squid-ubuntu1804/build
-
-touch-ubuntu-20.04-flags:
-	touch ./squid-ubuntu2004/build
-
-touch-ubuntu-22.04-flags:
-	touch ./squid-ubuntu2204/build
-
-touch-all-build-flags: touch-fedora-flags touch-centos-flags touch-amzn-flags touch-oracle-flags touch-debian-flags touch-ubuntu-flags 
-	echo 1
-
-build:
-	bash build-all.sh
 
 clean:	clean-ccache clean-packages
 
@@ -244,13 +183,16 @@ clean-centos-8-container:
 clean-centos-9-container:
 	podman rmi squidbuild:centos9 -f;true
 
-clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container
+clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container clean-fedora-36-container
 
 clean-fedora-33-container:
 	podman rmi squidbuild:fedora33 -f;true
 
 clean-fedora-35-container:
 	podman rmi squidbuild:fedora35 -f;true
+
+clean-fedora-36-container:
+	podman rmi squidbuild:fedora36 -f;true
 
 
 clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container  clean-ubuntu-22.04-container
@@ -382,111 +324,13 @@ deploy-centos-9-packages:
 	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/SRPMS/
 
 
+
 deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta-packages deploy-centos-9-beta-packages
 
 deploy-centos-7-beta-packages:
 	mkdir -p $(REPO_ROOT)/centos/7/beta/x86_64
-	mkdir -p $(REPO_ROOT)/centos/7/beta/SRPMS
-	cp -v squid-centos-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/7/beta/x86_64/
-	cp -v squid-centos-7/srv/packages/*.src.rpm $(REPO_ROOT)/centos/7/beta/SRPMS/
 
-deploy-centos-8-beta-packages:
-	mkdir -p $(REPO_ROOT)/centos/8/beta/x86_64
-	mkdir -p $(REPO_ROOT)/centos/8/beta/SRPMS
-	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/beta/x86_64/
-	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/beta/SRPMS/
-
-deploy-centos-9-beta-packages:
-	mkdir -p $(REPO_ROOT)/centos/9/beta/x86_64
-	mkdir -p $(REPO_ROOT)/centos/9/beta/SRPMS
-	cp -v squid-centos-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/9/beta/x86_64/
-	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/beta/SRPMS/
-
-deploy-almalinux-packages: deploy-almalinux-8-packages #deploy-almalinux-9-packages
-
-deploy-almalinux-8-packages:
-	mkdir -p $(REPO_ROOT)/alma/8/x86_64
-	mkdir -p $(REPO_ROOT)/alma/8/SRPMS
-	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/x86_64/
-	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/SRPMS/
-
-deploy-almalinux-9-packages:
-	mkdir -p $(REPO_ROOT)/alma/9/x86_64
-	mkdir -p $(REPO_ROOT)/alma/9/SRPMS
-	cp -v squid-almalinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/9/x86_64/
-	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/
-
-
-deploy-rocky-packages: deploy-rockylinux-8-packages
-
-deploy-rockylinux-8-packages:
-	mkdir -p $(REPO_ROOT)/rocky/8/x86_64
-	mkdir -p $(REPO_ROOT)/rocky/8/SRPMS
-	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/x86_64/
-	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/SRPMS/
-
-
-deploy-oracle-packages: deploy-oracle-7-packages  deploy-oracle-8-packages
-
-deploy-oracle-7-packages:
-	mkdir -p $(REPO_ROOT)/oracle/7/x86_64
-	mkdir -p $(REPO_ROOT)/oracle/7/SRPMS
-	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/7/x86_64/
-	cp -v squid-oracle-7/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/7/SRPMS/
-
-deploy-oracle-8-packages:
-	mkdir -p $(REPO_ROOT)/oracle/8/x86_64
-	mkdir -p $(REPO_ROOT)/oracle/8/SRPMS
-	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/x86_64/
-	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/SRPMS/
-
-deploy-oracle-beta-packages: deploy-oracle-7-beta-packages  deploy-oracle-8-beta-packages
-
-deploy-oracle-7-beta-packages:
-	mkdir -p $(REPO_ROOT)/oracle/7/x86_64
-	mkdir -p $(REPO_ROOT)/oracle/7/SRPMS
-	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/7/x86_64/
-	cp -v squid-oracle-7/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/7/SRPMS/
-
-deploy-oracle-8-beta-packages:
-	mkdir -p $(REPO_ROOT)/oracle/8/beta/x86_64
-	mkdir -p $(REPO_ROOT)/oracle/8/beta/SRPMS
-	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/beta/x86_64/
-	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/beta/SRPMS/
-
-
-deploy-amzn-packages: deploy-amzn-1-packages  deploy-amzn-2-packages
-
-deploy-amzn-1-packages:
-	mkdir -p $(REPO_ROOT)/amzn/1/x86_64
-	mkdir -p $(REPO_ROOT)/amzn/1/SRPMS
-	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/1/x86_64/
-	cp -v squid-amzn-1/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/1/SRPMS/
-
-deploy-amzn-2-packages:
-	mkdir -p $(REPO_ROOT)/amzn/2/x86_64
-	mkdir -p $(REPO_ROOT)/amzn/2/SRPMS
-	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/x86_64/
-	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/SRPMS/
-
-deploy-beta-packages: deploy-centos-beta-packages deploy-oracle-beta-packages deploy-amzn-beta-packages  deploy-fedora-beta-packages
-
-
-deploy-amzn-beta-packages: deploy-amzn-2-beta-packages
-
-deploy-amzn-1-beta-packages:
-	mkdir -p $(REPO_ROOT)/amzn/1/beta/x86_64
-	mkdir -p $(REPO_ROOT)/amzn/1/beta/SRPMS
-	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/1/beta/x86_64/
-	cp -v squid-amzn-1/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/1/beta/SRPMS/
-
-deploy-amzn-2-beta-packages:
-	mkdir -p $(REPO_ROOT)/amzn/2/beta/x86_64
-	mkdir -p $(REPO_ROOT)/amzn/2/beta/SRPMS
-	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/beta/x86_64/
-	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/beta/SRPMS/
-
-deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages
+deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages deploy-fedora-36-packages
 
 deploy-fedora-33-packages:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
@@ -500,31 +344,59 @@ deploy-fedora-35-packages:
 	cp -v squid-fedora-35/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/35/x86_64/
 	cp -v squid-fedora-35/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/35/SRPMS/
 
-deploy-fedora-beta-packages: deploy-fedora-33-beta-packages deploy-fedora-35-beta-packages
+deploy-fedora-36-packages:
+	mkdir -p $(REPO_ROOT)/fedora/36/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/36/SRPMS
+	cp -v squid-fedora-36/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/36/x86_64/
+	cp -v squid-fedora-36/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/36/SRPMS/
 
-deploy-fedora-33-beta-packages:
-	mkdir -p $(REPO_ROOT)/fedora/33/beta/x86_64
-	mkdir -p $(REPO_ROOT)/fedora/33/beta/SRPMS
-	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/33/beta/x86_64/
-	cp -v squid-fedora-33/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/33/beta/SRPMS/
-
-deploy-fedora-35-beta-packages:
-	mkdir -p $(REPO_ROOT)/fedora/35/beta/x86_64
-	mkdir -p $(REPO_ROOT)/fedora/35/beta/SRPMS
-	cp -v squid-fedora-35/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/35/beta/x86_64/
-	cp -v squid-fedora-35/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/35/beta/SRPMS/
+create-repo-rpms: create-repo-alma create-repo-rocky create-repo-oracle create-repo-fedora create-repo-amzn
 
 create-repo-centos: create-repo-centos7 create-repo-centos8
 
 create-repo-centos7:
+	mkdir -p $(REPO_ROOT)/centos/7/x86_64
+	mkdir -p $(REPO_ROOT)/centos/7/SRPMS
 	cd $(REPO_ROOT)/centos/7/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/centos/7/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/7
 
 create-repo-centos8:
+	mkdir -p $(REPO_ROOT)/centos/8/x86_64
+	mkdir -p $(REPO_ROOT)/centos/8/SRPMS
 	cd $(REPO_ROOT)/centos/8/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/centos/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/8
+
+create-repo-centos9:
+	mkdir -p $(REPO_ROOT)/centos/9/x86_64
+	mkdir -p $(REPO_ROOT)/centos/9/SRPMS
+	cd $(REPO_ROOT)/centos/9/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/centos/9/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/centos/9
+
+create-repo-fedora: create-repo-fedora33 create-repo-fedora34 create-repo-fedora36
+
+create-repo-fedora33:
+	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/33/SRPMS
+	cd $(REPO_ROOT)/fedora/33/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/fedora/33/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/fedora/33
+
+create-repo-fedora35:
+	mkdir -p $(REPO_ROOT)/fedora/35/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/35/SRPMS
+	cd $(REPO_ROOT)/fedora/35/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/fedora/35/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/fedora/35
+
+create-repo-fedora36:
+	mkdir -p $(REPO_ROOT)/fedora/36/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/36/SRPMS
+	cd $(REPO_ROOT)/fedora/36/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/fedora/36/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/fedora/34
 
 
 create-repo-almalinux: create-repo-alma
@@ -532,11 +404,15 @@ create-repo-almalinux: create-repo-alma
 create-repo-alma: create-repo-alma8 create-repo-alma9
 
 create-repo-alma8:
+	mkdir -p $(REPO_ROOT)/alma/8/x86_64
+	mkdir -p $(REPO_ROOT)/alma/8/SRPMS
 	cd $(REPO_ROOT)/alma/8/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/alma/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/alma/8
 
 create-repo-alma9:
+	mkdir -p $(REPO_ROOT)/alma/9/x86_64
+	mkdir -p $(REPO_ROOT)/alma/9/SRPMS
 	cd $(REPO_ROOT)/alma/9/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/alma/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/alma/9
@@ -613,29 +489,28 @@ create-beta-repo-amzn2:
 	cd $(REPO_ROOT)/amzn/2/beta/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/amzn/2/beta
 
-create-repo-fedora: create-fedora-33-packages create-fedora-35-packages
+create-beta-repo-fedora: create-beta-repo-fedora-33 create-beta-repo-fedora-35 create-beta-repo-fedora-36
 
-create-fedora-33-packages:
-	cd $(REPO_ROOT)/fedora/33/x86_64 && createrepo ./
-	cd $(REPO_ROOT)/fedora/33/SRPMS && createrepo ./
-	touch $(REPO_ROOT)/fedora/33
-
-create-fedora-35-packages:
-	cd $(REPO_ROOT)/fedora/35/x86_64 && createrepo ./
-	cd $(REPO_ROOT)/fedora/35/SRPMS && createrepo ./
-	touch $(REPO_ROOT)/fedora/35
-
-create-beta-repo-fedora:create-fedora-33-beta-packages create-fedora-35-beta-packages
-
-create-fedora-33-beta-packages:
+create-beta-repo-fedora-33:
+	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/33/SRPMS
 	cd $(REPO_ROOT)/fedora/33/beta/x86_64 && createrepo ./
 	cd $(REPO_ROOT)/fedora/33/beta/SRPMS && createrepo ./
 	touch $(REPO_ROOT)/fedora/33/beta
 
-create-fedora-35-beta-packages:
+create-beta-repo-fedora-35:
+	mkdir -p $(REPO_ROOT)/fedora/35/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/35/SRPMS
 	cd $(REPO_ROOT)/fedora/35/beta/x86_64 && createrepo ./
 	cd $(REPO_ROOT)/fedora/35/beta/SRPMS && createrepo ./
 	touch $(REPO_ROOT)/fedora/35/beta
+
+create-beta-repo-fedora-36:
+	mkdir -p $(REPO_ROOT)/fedora/36/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/36/SRPMS
+	cd $(REPO_ROOT)/fedora/36/beta/x86_64 && createrepo ./
+	cd $(REPO_ROOT)/fedora/36/beta/SRPMS && createrepo ./
+	touch $(REPO_ROOT)/fedora/36/beta
 
 deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages
 
