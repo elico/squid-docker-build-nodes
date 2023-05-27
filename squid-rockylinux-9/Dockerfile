@@ -1,14 +1,16 @@
-FROM fedora:36
+FROM rockylinux:9
 
-RUN dnf install -y dnf-plugins-core \
+RUN dnf install -y epel-release dnf-plugins-core \
+   &&  dnf config-manager --set-enabled crb \
+   &&  dnf clean all \
    &&  dnf update -y \
-   &&  dnf install -y gcc gcc-c++ libtool libtool-ltdl make cmake ccache \
+   &&  dnf install -y gcc gcc-c++ libtool libtool-ltdl make cmake \
 		git pkgconfig sudo automake autoconf yum-utils rpm-build \
-   &&  dnf install -y libxml2 expat-devel openssl-devel libcap \
+   &&  dnf install -y libxml2 expat-devel openssl-devel libcap ccache \
 		libtool-ltdl-devel git autoconf \
 		automake libtool gcc-c++ bzip2 ed \
 		make openldap-devel pam-devel libxml2-devel \
-		libcap-devel screen vim nettle-devel redhat-lsb-core \
+		libcap-devel screen vim nettle-devel \
 		libtdb-devel libtdb redhat-rpm-config rpm-build rpm-devel \
 		libnetfilter_conntrack-devel \
    &&  dnf install -y perl-libwww-perl ruby ruby-devel \
@@ -36,7 +38,7 @@ RUN useradd builder -u 1000 -m -G users,wheel \
 
 USER builder
 
-ENV FLAVOR=rpmbuild OS=centos DIST=fc36
+ENV FLAVOR=rpmbuild OS=centos DIST=el9
 
 CMD ["/srv/pkg"]
 

@@ -36,7 +36,7 @@ RUN useradd builder -u 1000 -m -G users,wheel \
 
 USER builder
 
-ENV FLAVOR=rpmbuild OS=centos DIST=fc33
+ENV FLAVOR=rpmbuild OS=centos DIST=fc35
 
 CMD ["/srv/pkg"]
 

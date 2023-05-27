@@ -20,12 +20,6 @@ USE_CCACHE="1"
 CCACHE_DIR="/srv/ccache"
 RELEASE_NUMBER=$(head -1 release)
 
-BUILD_ARRAY=`ls -d squid*/`
-
-if [[ ! -z "${BUILD_ONLY}" ]];then
-	BUILD_ARRAY=`ls -d */|egrep "${BUILD_ONLY}"`
-fi
-
 cd "${BUILD}"
 DOCKER_IMAGE=`cat podmanimage`
 echo "${DOCKER_IMAGE}"

@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+
+#!/bin/bash -exu
+set -x
+set -e
+
+if [[ "${DEBUG_MODE}" -eq "1" ]];then
+	set -x
+fi
+
+
+if [[ -z "${RELEASE_NUMBER}" ]];then
+	echo "RELEASE_NUMBER must be present"
+	exit 1
+fi
+
+if [[ -z "${SOURCES_URL}" ]];then
+	echo "SOURCES_URL must be present"
+	exit 1
+fi
+
+export SOURCES_FILENAME=$(basename ${SOURCES_URL})
+export USE_ASC="1"
+export BUILDZONE=${HOME}
+export DESTDIR="${BUILDZONE}/fakeroot"
+export PACKAGES_DEST="/srv/packages"
+## Debian and Ubuntu user: proxy
+## Others?
+export PROXY_USER=proxy
+## Amazon Linux user: squid
+export PROXY_USER=squid
+
+export ARCH=$(uname -m| sed 's/x86_//;s/i[3-6]86/32/')
+export CPU_COUNT=$(grep processor /proc/cpuinfo | wc -l)
+export USER=$(whoami)
+
+export SPEC_FILE="squid.spec"
+
+export SOURCES_VERSION=$(echo ${SOURCES_FILENAME} |sed -e 's@\.tar\.bz2$@@g'  |sed -e 's@\.tar\.gz$@@g'|sed -e 's@\.tar\.xz$@@g'|sed -e 's@\.tar$@@g')
+
+
+## For RPM Based OS such as: CentOS\RHEL\AWS\SUSE\Oracle
+#export SOURCES_VERSION=$(echo "${SOURCES_VERSION}"|awk -F"-" '{ print $2 }')
+export SOURCES_VERSION=$(echo "${SOURCES_VERSION}"|sed -e 's@squid-@@g')
+
+cd ${BUILDZONE}
+sudo mkdir -p "${PACKAGES_DEST}"
+sudo chmod 777 "${PACKAGES_DEST}"
+sudo chown ${USER}: "${PACKAGES_DEST}"
+
+mkdir -p ${BUILDZONE}/{BUILD,RPMS,SRPMS,SPECS,SOURCES}
+
+if [[ "${USE_CCACHE}" -eq "1" ]];then
+	ccache -s
+
+	if [[ ! -z "${CCACHE_DIR}" ]]; then
+		sudo mkdir -p "${CCACHE_DIR}"
+		sudo chmod 777 "${CCACHE_DIR}"
+		sudo chown -R "${USER}": "${CCACHE_DIR}"
+		export PATH=/usr/lib/ccache:${PATH}
+	fi
+
+fi
+
+
+if [[ -f "/srv/${SOURCES_FILENAME}" ]];then
+	echo ""
+	cp -v "/srv/${SOURCES_FILENAME}" "${BUILDZONE}/"
+else
+	wget -O "${BUILDZONE}/${SOURCES_FILENAME}" "${SOURCES_URL}"
+fi
+
+cp -v "${BUILDZONE}/${SOURCES_FILENAME}" "${BUILDZONE}/SOURCES/${SOURCES_FILENAME}"
+
+if [[ "${USE_ASC}" -eq "1" ]];then
+
+    if [[ -f "/srv/${SOURCES_FILENAME}.asc" ]];then
+	    echo ""
+	    cp -v "/srv/${SOURCES_FILENAME}.asc" "${BUILDZONE}/"
+    else
+	    wget -O "${BUILDZONE}/${SOURCES_FILENAME}.asc" "${SOURCES_URL}.asc"
+    fi
+
+    cp -v "${BUILDZONE}/${SOURCES_FILENAME}.asc" "${BUILDZONE}/SOURCES/${SOURCES_FILENAME}.asc"
+fi
+cp -v "/srv/SOURCES/"* "${BUILDZONE}/SOURCES/"
+cp -v "/srv/SPECS/"* "${BUILDZONE}/SPECS/"
+
+rpmbuild --define '_topdir '${BUILDZONE} --define "_smp_mflags -j${CPU_COUNT}" -ba -vv "${BUILDZONE}/SPECS/dummy-ffmpeg.spec"
+cp -v "${BUILDZONE}/RPMS/"*"/"* "${PACKAGES_DEST}/"
+cp -v "${BUILDZONE}/SRPMS/"* "${PACKAGES_DEST}/"
+
+rpmbuild --define '_topdir '${BUILDZONE} --define "_smp_mflags -j${CPU_COUNT}" -ba -vv "${BUILDZONE}/SPECS/${SPEC_FILE}"
+
+cp -v "${BUILDZONE}/RPMS/"*"/"* "${PACKAGES_DEST}/"
+cp -v "${BUILDZONE}/SRPMS/"* "${PACKAGES_DEST}/"
+
+set +e
+set +x

@@ -60,6 +60,10 @@ build-almalinux-8:
 build-almalinux-9:
 	bash build.sh squid-almalinux-9
 
+build-alma-8: build-almalinux-8
+
+build-alma-9: build-almalinux-9
+
 build-alma: build-almalinux
 
 build-rockylinux: build-rockylinux-8 build-rockylinux-9
@@ -72,6 +76,10 @@ build-rockylinux-9:
 
 build-rocky: build-rockylinux
 
+build-rocky-8: build-rockylinux-8
+
+build-rocky-9: build-rockylinux-9
+
 build-fedora: build-fedora-33 build-fedora-35 build-fedora-36
 
 build-fedora-33:
@@ -83,6 +91,9 @@ build-fedora-35:
 build-fedora-36:
 	bash build.sh squid-fedora-36
 
+build-fedora-38:
+	bash build.sh squid-fedora-38
+
 fedora: build-fedora
 
 fedora-33: build-fedora-33
@@ -90,6 +101,8 @@ fedora-33: build-fedora-33
 fedora-35: build-fedora-35
 
 fedora-36: build-fedora-36
+
+fedora-38: build-fedora-38
 
 
 build-oracle: build-oracle-7 build-oracle-8 
@@ -100,13 +113,20 @@ build-oracle-7:
 build-oracle-8:
 	bash build.sh squid-oracle-8
 
+build-oracle-9:
+	bash build.sh squid-oracle-9
+
 oracle-7: build-oracle-7
 
 oracle-8: build-oracle-8
 
+oracle-9: build-oracle-9
+
 oracle7: build-oracle-7
 
 oracle8: build-oracle-8
+
+oracle9: build-oracle-9
 
 ubuntu: build-ubuntu
  
@@ -183,7 +203,7 @@ clean-centos-8-container:
 clean-centos-9-container:
 	podman rmi squidbuild:centos9 -f;true
 
-clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container clean-fedora-36-container
+clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container clean-fedora-36-container clean-fedora-38-container
 
 clean-fedora-33-container:
 	podman rmi squidbuild:fedora33 -f;true
@@ -194,6 +214,8 @@ clean-fedora-35-container:
 clean-fedora-36-container:
 	podman rmi squidbuild:fedora36 -f;true
 
+clean-fedora-38-container:
+	podman rmi squidbuild:fedora38 -f;true
 
 clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container  clean-ubuntu-22.04-container
 
@@ -218,13 +240,16 @@ clean-amzn-2-container:
 	podman rmi squidbuild:amzn2 -f;true
 
 
-clean-oracle-containers: clean-oracle-7-container clean-oracle-8-container
+clean-oracle-containers: clean-oracle-7-container clean-oracle-8-container clean-oracle-9-container
 
 clean-oracle-7-container:
 	podman rmi squidbuild:ol7 -f;true
 
 clean-oracle-8-container:
 	podman rmi squidbuild:ol8 -f;true
+
+clean-oracle-9-container:
+	podman rmi squidbuild:ol9 -f;true
 
 
 clean-debian-container: clean-debian-9-container clean-debian-10-container clean-debian-11-container
@@ -242,12 +267,16 @@ clean-debian-9-container:
 fetch-podman-images: fetch-oracle-images fetch-centos-images fetch-amzn-images fetch-debian-images fetch-ubuntu-images
 
 
-fetch-oracle-images: fetch-oracle-7-image fetch-oracle-8-image
+fetch-oracle-images: fetch-oracle-7-image fetch-oracle-8-image fetch-oracle-9-image
 
 fetch-oracle-7-image:
 	podman pull oraclelinux:7
+
 fetch-oracle-8-image:
 	podman pull oraclelinux:8
+
+fetch-oracle-9-image:
+	podman pull oraclelinux:9
 
 
 fetch-centos-images:  fetch-centos-7-image fetch-centos-8-image fetch-centos-9-image
@@ -302,8 +331,7 @@ deploy-packages:
 deploy-rpms: deploy-centos-packages deploy-oracle-packages deploy-amzn-2-packages deploy-almalinux-packages deploy-rockylinux-packages
 
 
-deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages
-# deploy-centos-9-packages
+deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages deploy-centos-9-packages
 
 deploy-centos-7-packages:
 	mkdir -p $(REPO_ROOT)/centos/7/x86_64
@@ -323,6 +351,53 @@ deploy-centos-9-packages:
 	cp -v squid-centos-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/9/x86_64/
 	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/SRPMS/
 
+deploy-oracle-packages: deploy-oracle-7-packages deploy-oracle-8-packages deploy-oracle-9-packages
+
+deploy-oracle-7-packages:
+	mkdir -p $(REPO_ROOT)/oracle/7/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/7/SRPMS
+	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/7/x86_64/
+	cp -v squid-oracle-7/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/7/SRPMS/
+
+deploy-oracle-8-packages:
+	mkdir -p $(REPO_ROOT)/oracle/8/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/8/SRPMS
+	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/x86_64/
+	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/SRPMS/
+
+deploy-oracle-9-packages:
+	mkdir -p $(REPO_ROOT)/oracle/9/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/9/SRPMS
+	cp -v squid-oracle-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/9/x86_64/
+	cp -v squid-oracle-9/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/9/SRPMS/
+
+deploy-rocky-packages: deploy-rocky-8-packages deploy-rocky-9-packages
+
+deploy-rocky-8-packages:
+	mkdir -p $(REPO_ROOT)/rocky/8/x86_64
+	mkdir -p $(REPO_ROOT)/rocky/8/SRPMS
+	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/x86_64/
+	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/SRPMS/
+
+deploy-rocky-9-packages:
+	mkdir -p $(REPO_ROOT)/rocky/9/x86_64
+	mkdir -p $(REPO_ROOT)/rocky/9/SRPMS
+	cp -v squid-rockylinux-9/srv/packages/*.x96_64.rpm $(REPO_ROOT)/rocky/9/x96_64/
+	cp -v squid-rockylinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/9/SRPMS/
+
+deploy-amzn-packages: deploy-amzn-1-packages deploy-amzn-2-packages
+
+deploy-amzn-1-packages:
+	mkdir -p $(REPO_ROOT)/amzn/1/x86_64
+	mkdir -p $(REPO_ROOT)/amzn/1/SRPMS
+	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/1/x86_64/
+	cp -v squid-amzn-1/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/1/SRPMS/
+
+deploy-amzn-2-packages:
+	mkdir -p $(REPO_ROOT)/amzn/2/x86_64
+	mkdir -p $(REPO_ROOT)/amzn/2/SRPMS
+	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/x86_64/
+	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/SRPMS/
 
 
 deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta-packages deploy-centos-9-beta-packages
@@ -330,7 +405,7 @@ deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta
 deploy-centos-7-beta-packages:
 	mkdir -p $(REPO_ROOT)/centos/7/beta/x86_64
 
-deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages deploy-fedora-36-packages
+deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages deploy-fedora-36-packages deploy-fedora-38-packages
 
 deploy-fedora-33-packages:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
@@ -349,6 +424,32 @@ deploy-fedora-36-packages:
 	mkdir -p $(REPO_ROOT)/fedora/36/SRPMS
 	cp -v squid-fedora-36/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/36/x86_64/
 	cp -v squid-fedora-36/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/36/SRPMS/
+
+deploy-fedora-38-packages:
+	mkdir -p $(REPO_ROOT)/fedora/38/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/38/SRPMS
+	cp -v squid-fedora-38/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/38/x86_64/
+	cp -v squid-fedora-38/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/38/SRPMS/
+
+
+deploy-almalinux-packages: deploy-alma-8-packages deploy-alma-9-packages
+
+deploy-alma-8-packages:
+	mkdir -p $(REPO_ROOT)/alma/8/x86_64
+	mkdir -p $(REPO_ROOT)/alma/8/SRPMS
+	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/x86_64/
+	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/SRPMS/
+
+deploy-alma-9-packages:
+	mkdir -p $(REPO_ROOT)/alma/9/x86_64
+	mkdir -p $(REPO_ROOT)/alma/9/SRPMS
+	cp -v squid-almalinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/9/x86_64/
+	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/
+
+
+deploy-almalinux-8-packages: deploy-alma-8-packages
+
+deploy-almalinux-9-packages: deploy-alma-9-packages
 
 create-repo-rpms: create-repo-alma create-repo-rocky create-repo-oracle create-repo-fedora create-repo-amzn
 
@@ -375,7 +476,7 @@ create-repo-centos9:
 	cd $(REPO_ROOT)/centos/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/9
 
-create-repo-fedora: create-repo-fedora33 create-repo-fedora34 create-repo-fedora36
+create-repo-fedora: create-repo-fedora33 create-repo-fedora34 create-repo-fedora36 create-repo-fedora38
 
 create-repo-fedora33:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
@@ -396,7 +497,14 @@ create-repo-fedora36:
 	mkdir -p $(REPO_ROOT)/fedora/36/SRPMS
 	cd $(REPO_ROOT)/fedora/36/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/fedora/36/x86_64 && createrepo ./
-	touch $(REPO_ROOT)/fedora/34
+	touch $(REPO_ROOT)/fedora/36
+
+create-repo-fedora38:
+	mkdir -p $(REPO_ROOT)/fedora/38/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/38/SRPMS
+	cd $(REPO_ROOT)/fedora/38/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/fedora/38/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/fedora/38
 
 
 create-repo-almalinux: create-repo-alma
@@ -419,12 +527,17 @@ create-repo-alma9:
 
 create-repo-rockylinux: create-repo-rocky
 
-create-repo-rocky: create-repo-rocky8
+create-repo-rocky: create-repo-rocky8 create-repo-rocky9
 
 create-repo-rocky8:
 	cd $(REPO_ROOT)/rocky/8/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/rocky/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/rocky/8
+
+create-repo-rocky9:
+	cd $(REPO_ROOT)/rocky/9/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/rocky/9/x96_64 && createrepo ./
+	touch $(REPO_ROOT)/rocky/9
 
 
 create-beta-repos: create-beta-repo-centos create-beta-repo-oracle create-beta-repo-fedora create-beta-repo-amzn
@@ -441,7 +554,7 @@ create-beta-repo-centos8:
 	cd $(REPO_ROOT)/centos/8/beta/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/8/beta
 
-create-repo-oracle: create-repo-oracle7 create-repo-oracle8
+create-repo-oracle: create-repo-oracle7 create-repo-oracle8 create-repo-oracle9
 
 create-repo-oracle7:
 	cd $(REPO_ROOT)/oracle/7/SRPMS && createrepo ./
@@ -453,7 +566,12 @@ create-repo-oracle8:
 	cd $(REPO_ROOT)/oracle/8/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/oracle/8
 
-create-beta-repo-oracle: create-beta-repo-oracle7 create-beta-repo-oracle8
+create-repo-oracle9:
+	cd $(REPO_ROOT)/oracle/9/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/oracle/9/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/oracle/9
+
+create-beta-repo-oracle: create-beta-repo-oracle7 create-beta-repo-oracle8 create-beta-repo-oracle9
 
 create-beta-repo-oracle7:
 	cd $(REPO_ROOT)/oracle/7/beta/SRPMS && createrepo ./
@@ -464,6 +582,11 @@ create-beta-repo-oracle8:
 	cd $(REPO_ROOT)/oracle/8/beta/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/oracle/8/beta/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/oracle/8/beta
+
+create-beta-repo-oracle9:
+	cd $(REPO_ROOT)/oracle/9/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/oracle/9/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/oracle/9/beta
 
 create-repo-amzn: create-repo-amzn2
 
@@ -489,7 +612,7 @@ create-beta-repo-amzn2:
 	cd $(REPO_ROOT)/amzn/2/beta/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/amzn/2/beta
 
-create-beta-repo-fedora: create-beta-repo-fedora-33 create-beta-repo-fedora-35 create-beta-repo-fedora-36
+create-beta-repo-fedora: create-beta-repo-fedora-33 create-beta-repo-fedora-35 create-beta-repo-fedora-36 create-beta-repo-fedora-38
 
 create-beta-repo-fedora-33:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
@@ -511,6 +634,13 @@ create-beta-repo-fedora-36:
 	cd $(REPO_ROOT)/fedora/36/beta/x86_64 && createrepo ./
 	cd $(REPO_ROOT)/fedora/36/beta/SRPMS && createrepo ./
 	touch $(REPO_ROOT)/fedora/36/beta
+
+create-beta-repo-fedora-38:
+	mkdir -p $(REPO_ROOT)/fedora/38/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/38/SRPMS
+	cd $(REPO_ROOT)/fedora/38/beta/x86_64 && createrepo ./
+	cd $(REPO_ROOT)/fedora/38/beta/SRPMS && createrepo ./
+	touch $(REPO_ROOT)/fedora/38/beta
 
 deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages
 
@@ -576,7 +706,10 @@ clean-rpms-packages:
 	rm -vf squid-centos-9/srv/packages/*.rpm 
 	rm -vf squid-oracle-7/srv/packages/*.rpm 
 	rm -vf squid-oracle-8/srv/packages/*.rpm 
+	rm -vf squid-oracle-9/srv/packages/*.rpm 
 	rm -vf squid-amzn-1/srv/packages/*.rpm
 	rm -vf squid-amzn-2/srv/packages/*.rpm
 	rm -vf squid-fedora-33/srv/packages/*.rpm
 	rm -vf squid-fedora-35/srv/packages/*.rpm
+	rm -vf squid-fedora-36/srv/packages/*.rpm
+	rm -vf squid-fedora-38/srv/packages/*.rpm

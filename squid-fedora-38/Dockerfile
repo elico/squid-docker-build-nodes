@@ -1,4 +1,4 @@
-FROM fedora:36
+FROM fedora:38
 
 RUN dnf install -y dnf-plugins-core \
    &&  dnf update -y \
@@ -36,7 +36,7 @@ RUN useradd builder -u 1000 -m -G users,wheel \
 
 USER builder
 
-ENV FLAVOR=rpmbuild OS=centos DIST=fc36
+ENV FLAVOR=rpmbuild OS=centos DIST=fc38
 
 CMD ["/srv/pkg"]
 

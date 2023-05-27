@@ -229,10 +229,10 @@ mv $RPM_BUILD_ROOT/usr/share/squid/mib.txt $RPM_BUILD_ROOT/usr/share/snmp/mibs/S
 # /usr/share/squid/errors/zh-cn and /usr/share/squid/errors/zh-tw were
 # substituted directories substituted by symlinks and RPM, can't handle
 # this change
-rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
-rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
-cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hant $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
-cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hans $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
+#rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
+#rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
+#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hant $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
+#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hans $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
 
 # squid.conf.documented is documentation. We ship that in doc/
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/squid/squid.conf.documented

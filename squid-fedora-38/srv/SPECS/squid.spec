@@ -1,6 +1,7 @@
 %define release_number %(echo $RELEASE_NUMBER)
 %define version_number %(echo $SOURCES_VERSION)
 %define sources_url %(echo $SOURCES_URL)
+%define _lto_cflags %{nil}
 
 Name:     squid
 Version:  %{version_number}
@@ -22,20 +23,11 @@ Source5:  squid.pam
 Source6:  squid.nm
 Source7:  squidshut.sh
 Patch0:   pinger_off_v4.patch
-
 Patch1:   050-disable-intercept-host-header-forgery.patch
-
-Patch2:   050-disable-intercept-host-header-forgery-5.4_1.patch
-Patch3:   050-disable-intercept-host-header-forgery-5.4_2.patch
-Patch4:   050-disable-intercept-host-header-forgery-5.4_3.patch
-
-Patch5:   v6-host-strictct-verify-1-of-3.patch
-Patch6:   v6-host-strictct-verify-2-of-3.patch
-Patch7:   v6-host-strictct-verify-3-of-3.patch
-
-Patch8:   v6-aclreg.cc-fix.patch
-
-Patch9:   050-disable-intercept-host-header-forgery-5.6_3.patch
+Patch2:   v6-host-strictct-verify-1-of-3.patch 
+Patch3:   v6-host-strictct-verify-2-of-3.patch
+Patch4:   v6-host-strictct-verify-3-of-3.patch
+Patch5:   v6-aclreg.cc-fix.patch 
 
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: bash >= 2.0
@@ -96,34 +88,16 @@ lookup program (dnsserver), a program for retrieving FTP data
 
 %endif
 
-%if "%{version_number}" > "5.0" && "%{version_number}" < "6.0"
-
-%patch2
-%patch3
-
-%if "%{version_number}" > "5.0" && "%{version_number}" < "5.6"
-
-%patch4
-
-%endif
-
-%if "%{version_number}" > "5.0" && "%{version_number}" > "5.5"
-
-%patch9
-
-%endif
-
-%endif
-
 %if "%{version_number}" > "6.0" && "%{version_number}" < "7.0"
 
-#%patch8
-
 #%patch5
-#%patch6
-#%patch7
+
+#%patch2
+#%patch3
+#%patch4
 
 %endif
+
 
 %package helpers
 Group: System Environment/Daemons
@@ -137,10 +111,6 @@ The squid-helpers contains the external helpers.
 #was added due to new squid features that will be added soon
 export CXXFLAGS="$RPM_OPT_FLAGS -fPIC"
 export PERL=/usr/bin/perl
-
-mkdir -p src/icmp/tests
-mkdir -p tools/squidclient/tests
-mkdir -p tools/tests
 
 %configure \
   --exec_prefix=/usr \
@@ -229,10 +199,10 @@ mv $RPM_BUILD_ROOT/usr/share/squid/mib.txt $RPM_BUILD_ROOT/usr/share/snmp/mibs/S
 # /usr/share/squid/errors/zh-cn and /usr/share/squid/errors/zh-tw were
 # substituted directories substituted by symlinks and RPM, can't handle
 # this change
-#rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
-#rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
-#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hant $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
-#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hans $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
+rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
+rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
+cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hant $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
+cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hans $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
 
 # squid.conf.documented is documentation. We ship that in doc/
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/squid/squid.conf.documented

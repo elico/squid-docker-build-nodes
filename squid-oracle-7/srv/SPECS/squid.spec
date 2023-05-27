@@ -144,11 +144,11 @@ The squid-helpers contains the external helpers.
 
 %if "%{version_number}" > "6.0" && "%{version_number}" < "7.0"
 
-%patch9
+#%patch9
 
-%patch6
-%patch7
-%patch8
+#%patch6
+#%patch7
+#%patch8
 
 %endif
 %build
