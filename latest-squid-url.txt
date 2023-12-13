@@ -1,1 +1,1 @@
-http://www.squid-cache.org/Versions/v5/squid-5.9.tar.xz
+http://www.squid-cache.org/Versions/v6/squid-6.6.tar.xz

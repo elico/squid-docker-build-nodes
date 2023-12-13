@@ -80,11 +80,11 @@ lookup program (dnsserver), a program for retrieving FTP data
 
 %prep
 %setup -q
-%patch0
+%patch 0
 
 %if "%{version_number}" < "5.0"
 
-%patch1
+%patch 1
 
 %endif
 
@@ -201,8 +201,8 @@ mv $RPM_BUILD_ROOT/usr/share/squid/mib.txt $RPM_BUILD_ROOT/usr/share/snmp/mibs/S
 # this change
 rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
 rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
-cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hant $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
-cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hans $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
+#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hant $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
+#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hans $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
 
 # squid.conf.documented is documentation. We ship that in doc/
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/squid/squid.conf.documented

@@ -117,11 +117,11 @@ lookup program (dnsserver), a program for retrieving FTP data
 
 %if "%{version_number}" > "6.0" && "%{version_number}" < "7.0"
 
-%patch8
+#%patch8
 
-%patch5
-%patch6
-%patch7
+#%patch5
+#%patch6
+#%patch7
 
 %endif
 

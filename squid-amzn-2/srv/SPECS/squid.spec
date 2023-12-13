@@ -117,11 +117,11 @@ lookup program (dnsserver), a program for retrieving FTP data
 
 %if "%{version_number}" > "6.0" && "%{version_number}" < "7.0"
 
-%patch8
+#%patch8
 
-%patch5
-%patch6
-%patch7
+#%patch5
+#%patch6
+#%patch7
 
 %endif
 
@@ -365,5 +365,5 @@ fi
     chmod 750 /var/lib/samba/winbindd_privileged  >/dev/null 2>&1 || :
 
 %changelog
-* Tue Dec 18 2019 Eliezer Croitoru <eliezer@ngtech.co.il>
-- Release 4.9-1 This is a testing version.
+* Mon Aug 28 2023 Eliezer Croitoru <ngtech1ltd@gmail.com>
+- Release 6.2-1 This is a testing version.

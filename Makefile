@@ -371,6 +371,14 @@ deploy-oracle-9-packages:
 	cp -v squid-oracle-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/9/x86_64/
 	cp -v squid-oracle-9/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/9/SRPMS/
 
+
+deploy-oracle-8-beta-packages:
+	mkdir -p $(REPO_ROOT)/oracle/8/beta/x86_64
+	mkdir -p $(REPO_ROOT)/oracle/8/beta/SRPMS
+	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/beta/x86_64/
+	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/beta/SRPMS/
+
+
 deploy-rocky-packages: deploy-rocky-8-packages deploy-rocky-9-packages
 
 deploy-rocky-8-packages:
@@ -384,6 +392,12 @@ deploy-rocky-9-packages:
 	mkdir -p $(REPO_ROOT)/rocky/9/SRPMS
 	cp -v squid-rockylinux-9/srv/packages/*.x96_64.rpm $(REPO_ROOT)/rocky/9/x96_64/
 	cp -v squid-rockylinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/9/SRPMS/
+
+deploy-rocky-8-beta-packages:
+	mkdir -p $(REPO_ROOT)/rocky/8/beta/x86_64
+	mkdir -p $(REPO_ROOT)/rocky/8/beta/SRPMS
+	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/beta/x86_64/
+	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/beta/SRPMS/
 
 deploy-amzn-packages: deploy-amzn-1-packages deploy-amzn-2-packages
 
@@ -404,6 +418,12 @@ deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta
 
 deploy-centos-7-beta-packages:
 	mkdir -p $(REPO_ROOT)/centos/7/beta/x86_64
+
+deploy-centos-8-beta-packages:
+	mkdir -p $(REPO_ROOT)/centos/8/beta/x86_64
+	mkdir -p $(REPO_ROOT)/centos/8/beta/SRPMS
+	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/beta/x86_64/
+	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/beta/SRPMS/
 
 deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages deploy-fedora-36-packages deploy-fedora-38-packages
 
@@ -445,6 +465,12 @@ deploy-alma-9-packages:
 	mkdir -p $(REPO_ROOT)/alma/9/SRPMS
 	cp -v squid-almalinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/9/x86_64/
 	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/
+
+deploy-alma-8-beta-packages:
+	mkdir -p $(REPO_ROOT)/alma/8/beta/x86_64
+	mkdir -p $(REPO_ROOT)/alma/8/beta/SRPMS
+	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/beta/x86_64/
+	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/beta/SRPMS/
 
 
 deploy-almalinux-8-packages: deploy-alma-8-packages
@@ -525,6 +551,12 @@ create-repo-alma9:
 	cd $(REPO_ROOT)/alma/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/alma/9
 
+
+create-beta-repo-alma8:
+	cd $(REPO_ROOT)/alma/8/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/alma/8/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/alma/8/beta
+
 create-repo-rockylinux: create-repo-rocky
 
 create-repo-rocky: create-repo-rocky8 create-repo-rocky9
@@ -539,6 +571,11 @@ create-repo-rocky9:
 	cd $(REPO_ROOT)/rocky/9/x96_64 && createrepo ./
 	touch $(REPO_ROOT)/rocky/9
 
+
+create-beta-repo-rocky8:
+	cd $(REPO_ROOT)/rocky/8/beta/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/rocky/8/beta/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/rocky/8/beta
 
 create-beta-repos: create-beta-repo-centos create-beta-repo-oracle create-beta-repo-fedora create-beta-repo-amzn
 
