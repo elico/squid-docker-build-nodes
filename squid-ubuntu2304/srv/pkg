@@ -1,0 +1,200 @@
+#!/bin/bash -exu
+
+if [[ "${DEBUG_MODE}" -eq "1" ]];then
+	set -x
+fi
+
+
+if [[ -z "${RELEASE_NUMBER}" ]];then
+	echo "RELEASE_NUMBER must be present"
+	exit 1
+fi
+
+if [[ -z "${SOURCES_URL}" ]];then
+	echo "SOURCES_URL must be present"
+	exit 1
+fi
+
+export SOURCES_FILENAME=$(basename ${SOURCES_URL})
+
+export BUILDZONE=${HOME}
+export DESTDIR="${BUILDZONE}/fakeroot"
+export PACKAGES_DEST="/srv/packages"
+export PATCHES_DIR="/srv/patches/enabled"
+## Debian and Ubuntu proxy
+## Others?
+export PROXY_USER=proxy
+
+export ARCH=$(uname -m| sed 's/x86_//;s/i[3-6]86/32/')
+export CPU_COUNT=$(grep processor /proc/cpuinfo | wc -l)
+export USER=$(whoami)
+
+cd ${BUILDZONE}
+mkdir -p "${PACKAGES_DEST}"
+chmod 777 "${PACKAGES_DEST}"
+chown ${USER}: "${PACKAGES_DEST}"
+
+cp -v /srv/tostrip ${BUILDZONE}/tostrip
+
+mkdir -p ${BUILDZONE}/{build,fakeroot,confdir}
+
+if [[ "${USE_CCACHE}" -eq "1" ]];then
+	ccache -s
+
+	if [[ ! -z "${CCACHE_DIR}" ]]; then
+		mkdir -p "${CCACHE_DIR}"
+		chmod 777 "${CCACHE_DIR}"
+		chown -R "${USER}": "${CCACHE_DIR}"
+		export PATH=/usr/lib/ccache:${PATH}
+	fi
+
+fi
+
+
+if [[ -f "/srv/${SOURCES_FILENAME}" ]];then
+	echo ""
+	cp -v "/srv/${SOURCES_FILENAME}" "${BUILDZONE}/"
+else
+	wget -O "${BUILDZONE}/${SOURCES_FILENAME}" "${SOURCES_URL}"
+fi
+
+tar xf "${BUILDZONE}/${SOURCES_FILENAME}" -C "${BUILDZONE}/"
+
+export SOURCES_VERSION=$(echo ${SOURCES_FILENAME} |sed -e 's@\.tar\.bz2$@@g'  |sed -e 's@\.tar\.gz$@@g'|sed -e 's@\.tar\.xz$@@g'|sed -e 's@\.tar$@@g')
+
+## Patch
+cd "${BUILDZONE}/${SOURCES_VERSION}"
+find "${PATCHES_DIR}" -name "*.patch" -exec bash -c "patch -p -u < {}" \;
+##
+
+cd "${BUILDZONE}/confdir"
+pwd
+
+if [[ -d "${BUILDZONE}/${SOURCES_VERSION}" ]]; then
+	echo "${BUILDZONE}/${SOURCES_VERSION}"
+fi
+
+${BUILDZONE}/${SOURCES_VERSION}/configure \
+	--prefix=/usr \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
+	--datadir=/usr/share/squid \
+	--sysconfdir=/etc/squid \
+	--libexecdir=/usr/lib/squid \
+	--mandir=/usr/share/man \
+	--enable-inline \
+	--enable-async-io=8 \
+	--enable-storeio=ufs,aufs,diskd,rock \
+	--enable-removal-policies=lru,heap \
+	--enable-delay-pools \
+	--enable-cache-digests \
+	--enable-icap-client \
+	--enable-follow-x-forwarded-for \
+	--enable-auth-basic=DB,fake,getpwnam,LDAP,NCSA,PAM,POP3,RADIUS,SASL,SMB \
+	--enable-auth-digest=file,LDAP \
+	--enable-auth-negotiate=kerberos,wrapper \
+	--enable-auth-ntlm=fake \
+	--enable-external-acl-helpers=file_userip,kerberos_ldap_group,LDAP_group,session,SQL_session,unix_group,wbinfo_group \
+	--enable-url-rewrite-helpers=fake \
+	--enable-eui \
+	--enable-esi \
+	--enable-icmp \
+	--enable-zph-qos \
+	--with-swapdir=/var/spool/squid \
+	--with-logdir=/var/log/squid \
+	--with-pidfile=/var/run/squid.pid \
+	--with-filedescriptors=65536 \
+	--with-large-files \
+	--with-default-user=${PROXY_USER} \
+	--enable-snmp \
+	--with-openssl \
+	--enable-ssl-crtd \
+	--disable-arch-native \
+	--enable-linux-netfilter
+
+
+echo "DESTDIR=${DESTDIR}"
+
+make -j${CPU_COUNT}
+
+make install
+
+
+case "$COMPRESSION" in
+	xz)
+tar cvfJ ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin.tar.xz -C ${DESTDIR} .
+
+# Find each elf binary
+# strip each elf binary
+find ${DESTDIR}/usr/lib/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+find ${DESTDIR}/usr/bin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+find ${DESTDIR}/usr/sbin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+
+tar cvfJ ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar.xz -C ${DESTDIR} .
+
+# Delete each elf binary debug file
+find ${DESTDIR}/ -type f |grep '.debug'|xargs -l1 rm
+
+tar cvfJ ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped-only.tar.xz -C ${DESTDIR} .
+
+# Unpack full package and then pacakge only debug files
+
+tar xfv ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar.xz -C ${DESTDIR}
+
+find ${DESTDIR}/ -type f |grep -v '.debug'|xargs -l1 rm
+
+tar cvfJ ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar.xz -C ${DESTDIR} .
+
+	;;
+	gz)
+tar cvfz ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin.tar.gz -C ${DESTDIR} .
+
+# Find each elf binary
+# strip each elf binary
+find ${DESTDIR}/usr/lib/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+find ${DESTDIR}/usr/bin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+find ${DESTDIR}/usr/sbin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+
+tar cvfz ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar.gz -C ${DESTDIR} .
+
+# Delete each elf binary debug file
+find ${DESTDIR}/ -type f |grep '.debug'|xargs -l1 rm
+
+tar cvfz ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped-only.tar.gz -C ${DESTDIR} .
+
+# Unpack full package and then pacakge only debug files
+
+tar xfv ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar.gz -C ${DESTDIR}
+
+find ${DESTDIR}/ -type f |grep -v '.debug'|xargs -l1 rm
+
+tar cvfz ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar.gz -C ${DESTDIR} .
+	;;
+
+	*)
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin.tar -C ${DESTDIR} .
+
+# Find each elf binary
+# strip each elf binary
+find ${DESTDIR}/usr/lib/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+find ${DESTDIR}/usr/bin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+find ${DESTDIR}/usr/sbin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
+
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar -C ${DESTDIR} .
+
+# Delete each elf binary debug file
+find ${DESTDIR}/ -type f |grep '.debug'|xargs -l1 rm
+
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped-only.tar -C ${DESTDIR} .
+
+# Unpack full package and then pacakge only debug files
+
+tar xfv ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar -C ${DESTDIR}
+
+find ${DESTDIR}/ -type f |grep -v '.debug'|xargs -l1 rm
+
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar -C ${DESTDIR} .
+	;;
+esac
+
+cp -v "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-"* "${PACKAGES_DEST}"/

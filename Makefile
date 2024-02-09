@@ -144,10 +144,13 @@ build-ubuntu-20.04:
 build-ubuntu-22.04:
 	bash build.sh squid-ubuntu2204 
 
+build-ubuntu-23.04:
+	bash build.sh squid-ubuntu2304 
+
 
 debian: build-debian
 
-build-debian: build-debian-9 build-debian-10 build-debian-11
+build-debian: build-debian-9 build-debian-10 build-debian-11 build-debian-12
 
 build-debian-9: 
 	bash build.sh squid-debian9
@@ -158,11 +161,18 @@ build-debian-10:
 build-debian-11:
 	bash build.sh squid-debian11
 
+build-debian-12:
+	bash build.sh squid-debian12
+
+
 debian-9: build-debian-9
 
 debian-10: build-debian-10
 
 debian-11: build-debian-11
+
+debian-12: build-debian-12
+
 
 
 
@@ -217,7 +227,7 @@ clean-fedora-36-container:
 clean-fedora-38-container:
 	podman rmi squidbuild:fedora38 -f;true
 
-clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container  clean-ubuntu-22.04-container
+clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container  clean-ubuntu-22.04-container clean-ubuntu-23.04-container
 
 clean-ubuntu-16.04-container:
 	podman rmi squidbuild:ubuntu1604 -f;true
@@ -230,6 +240,10 @@ clean-ubuntu-20.04-container:
 
 clean-ubuntu-22.04-container:
 	podman rmi squidbuild:ubuntu2204 -f;true
+
+clean-ubuntu-23.04-container:
+	podman rmi squidbuild:ubuntu2304 -f;true
+
 
 clean-amzn-containers: clean-amzn-1-container clean-amzn-2-container
 
@@ -252,7 +266,10 @@ clean-oracle-9-container:
 	podman rmi squidbuild:ol9 -f;true
 
 
-clean-debian-container: clean-debian-9-container clean-debian-10-container clean-debian-11-container
+clean-debian-container: clean-debian-9-container clean-debian-10-container clean-debian-11-container clean-debian-12-container
+
+clean-debian-12-container:
+	podman rmi squidbuild:debian12 -f;true
 
 clean-debian-11-container:
 	podman rmi squidbuild:debian11 -f;true
@@ -291,7 +308,7 @@ fetch-centos-9-image:
 	podman pull centos:stream9
 
 
-fetch-debian-images: fetch-debian-9-image fetch-debian-10-image fetch-debian-11-image
+fetch-debian-images: fetch-debian-9-image fetch-debian-10-image fetch-debian-11-image fetch-debian-12-image
 
 fetch-debian-9-image:
 	podman pull debian:stretch
@@ -302,14 +319,21 @@ fetch-debian-10-image:
 fetch-debian-11-image:
 	podman pull debian:bullseye
 
+fetch-debian-12-image:
+	podman pull debian:bookworm
 
-fetch-ubuntu-images: fetch-ubuntu-16.04-image fetch-ubuntu-18.04-image fetch-ubuntu-20.04-image fetch-ubuntu-22.04-image
+
+fetch-ubuntu-images: fetch-ubuntu-16.04-image fetch-ubuntu-18.04-image fetch-ubuntu-20.04-image fetch-ubuntu-22.04-image fetch-ubuntu-23.04-image
 
 fetch-ubuntu-20.04-image:
 	podman pull ubuntu:20.04
 
 fetch-ubuntu-22.04-image:
 	podman pull ubuntu:22.04
+
+fetch-ubuntu-23.04-image:
+	podman pull ubuntu:23.04
+
 
 fetch-ubuntu-18.04-image:
 	podman pull ubuntu:18.04
@@ -336,47 +360,47 @@ deploy-centos-packages: deploy-centos-7-packages  deploy-centos-8-packages deplo
 deploy-centos-7-packages:
 	mkdir -p $(REPO_ROOT)/centos/7/x86_64
 	mkdir -p $(REPO_ROOT)/centos/7/SRPMS
-	cp -v squid-centos-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/7/x86_64/
-	cp -v squid-centos-7/srv/packages/*.src.rpm $(REPO_ROOT)/centos/7/SRPMS/
+	cp -v squid-centos-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/7/x86_64/;true
+	cp -v squid-centos-7/srv/packages/*.src.rpm $(REPO_ROOT)/centos/7/SRPMS/;true
 
 deploy-centos-8-packages:
 	mkdir -p $(REPO_ROOT)/centos/8/x86_64
 	mkdir -p $(REPO_ROOT)/centos/8/SRPMS
-	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/x86_64/
+	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/x86_64/;true
 	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/SRPMS/
 
 deploy-centos-9-packages:
 	mkdir -p $(REPO_ROOT)/centos/9/x86_64
 	mkdir -p $(REPO_ROOT)/centos/9/SRPMS
-	cp -v squid-centos-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/9/x86_64/
-	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/SRPMS/
+	cp -v squid-centos-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/9/x86_64/;true
+	cp -v squid-centos-9/srv/packages/*.src.rpm $(REPO_ROOT)/centos/9/SRPMS/;true
 
 deploy-oracle-packages: deploy-oracle-7-packages deploy-oracle-8-packages deploy-oracle-9-packages
 
 deploy-oracle-7-packages:
 	mkdir -p $(REPO_ROOT)/oracle/7/x86_64
 	mkdir -p $(REPO_ROOT)/oracle/7/SRPMS
-	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/7/x86_64/
-	cp -v squid-oracle-7/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/7/SRPMS/
+	cp -v squid-oracle-7/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/7/x86_64/;true
+	cp -v squid-oracle-7/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/7/SRPMS/;true
 
 deploy-oracle-8-packages:
 	mkdir -p $(REPO_ROOT)/oracle/8/x86_64
 	mkdir -p $(REPO_ROOT)/oracle/8/SRPMS
-	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/x86_64/
-	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/SRPMS/
+	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/x86_64/;true
+	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/SRPMS/;true
 
 deploy-oracle-9-packages:
 	mkdir -p $(REPO_ROOT)/oracle/9/x86_64
 	mkdir -p $(REPO_ROOT)/oracle/9/SRPMS
-	cp -v squid-oracle-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/9/x86_64/
-	cp -v squid-oracle-9/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/9/SRPMS/
+	cp -v squid-oracle-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/9/x86_64/;true
+	cp -v squid-oracle-9/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/9/SRPMS/;true
 
 
 deploy-oracle-8-beta-packages:
 	mkdir -p $(REPO_ROOT)/oracle/8/beta/x86_64
 	mkdir -p $(REPO_ROOT)/oracle/8/beta/SRPMS
-	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/beta/x86_64/
-	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/beta/SRPMS/
+	cp -v squid-oracle-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/oracle/8/beta/x86_64/;true
+	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/beta/SRPMS/;true
 
 
 deploy-rocky-packages: deploy-rocky-8-packages deploy-rocky-9-packages
@@ -384,34 +408,34 @@ deploy-rocky-packages: deploy-rocky-8-packages deploy-rocky-9-packages
 deploy-rocky-8-packages:
 	mkdir -p $(REPO_ROOT)/rocky/8/x86_64
 	mkdir -p $(REPO_ROOT)/rocky/8/SRPMS
-	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/x86_64/
-	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/SRPMS/
+	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/x86_64/;true
+	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/SRPMS/;true
 
 deploy-rocky-9-packages:
 	mkdir -p $(REPO_ROOT)/rocky/9/x86_64
 	mkdir -p $(REPO_ROOT)/rocky/9/SRPMS
-	cp -v squid-rockylinux-9/srv/packages/*.x96_64.rpm $(REPO_ROOT)/rocky/9/x96_64/
-	cp -v squid-rockylinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/9/SRPMS/
+	cp -v squid-rockylinux-9/srv/packages/*.x96_64.rpm $(REPO_ROOT)/rocky/9/x96_64/;true
+	cp -v squid-rockylinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/9/SRPMS/;true
 
 deploy-rocky-8-beta-packages:
 	mkdir -p $(REPO_ROOT)/rocky/8/beta/x86_64
 	mkdir -p $(REPO_ROOT)/rocky/8/beta/SRPMS
-	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/beta/x86_64/
-	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/beta/SRPMS/
+	cp -v squid-rockylinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/8/beta/x86_64/;true
+	cp -v squid-rockylinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/8/beta/SRPMS/;true
 
 deploy-amzn-packages: deploy-amzn-1-packages deploy-amzn-2-packages
 
 deploy-amzn-1-packages:
 	mkdir -p $(REPO_ROOT)/amzn/1/x86_64
 	mkdir -p $(REPO_ROOT)/amzn/1/SRPMS
-	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/1/x86_64/
-	cp -v squid-amzn-1/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/1/SRPMS/
+	cp -v squid-amzn-1/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/1/x86_64/;true
+	cp -v squid-amzn-1/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/1/SRPMS/;true
 
 deploy-amzn-2-packages:
 	mkdir -p $(REPO_ROOT)/amzn/2/x86_64
 	mkdir -p $(REPO_ROOT)/amzn/2/SRPMS
-	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/x86_64/
-	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/SRPMS/
+	cp -v squid-amzn-2/srv/packages/*.x86_64.rpm $(REPO_ROOT)/amzn/2/x86_64/;true
+	cp -v squid-amzn-2/srv/packages/*.src.rpm $(REPO_ROOT)/amzn/2/SRPMS/;true
 
 
 deploy-centos-beta-packages: deploy-centos-7-beta-packages  deploy-centos-8-beta-packages deploy-centos-9-beta-packages
@@ -422,7 +446,7 @@ deploy-centos-7-beta-packages:
 deploy-centos-8-beta-packages:
 	mkdir -p $(REPO_ROOT)/centos/8/beta/x86_64
 	mkdir -p $(REPO_ROOT)/centos/8/beta/SRPMS
-	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/beta/x86_64/
+	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/beta/x86_64/;true
 	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/beta/SRPMS/
 
 deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages deploy-fedora-36-packages deploy-fedora-38-packages
@@ -430,26 +454,26 @@ deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages depl
 deploy-fedora-33-packages:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
 	mkdir -p $(REPO_ROOT)/fedora/33/SRPMS
-	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/33/x86_64/
-	cp -v squid-fedora-33/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/33/SRPMS/
+	cp -v squid-fedora-33/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/33/x86_64/;true
+	cp -v squid-fedora-33/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/33/SRPMS/;true
 
 deploy-fedora-35-packages:
 	mkdir -p $(REPO_ROOT)/fedora/35/x86_64
 	mkdir -p $(REPO_ROOT)/fedora/35/SRPMS
-	cp -v squid-fedora-35/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/35/x86_64/
-	cp -v squid-fedora-35/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/35/SRPMS/
+	cp -v squid-fedora-35/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/35/x86_64/;true
+	cp -v squid-fedora-35/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/35/SRPMS/;true
 
 deploy-fedora-36-packages:
 	mkdir -p $(REPO_ROOT)/fedora/36/x86_64
 	mkdir -p $(REPO_ROOT)/fedora/36/SRPMS
-	cp -v squid-fedora-36/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/36/x86_64/
-	cp -v squid-fedora-36/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/36/SRPMS/
+	cp -v squid-fedora-36/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/36/x86_64/;true
+	cp -v squid-fedora-36/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/36/SRPMS/;true
 
 deploy-fedora-38-packages:
 	mkdir -p $(REPO_ROOT)/fedora/38/x86_64
 	mkdir -p $(REPO_ROOT)/fedora/38/SRPMS
-	cp -v squid-fedora-38/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/38/x86_64/
-	cp -v squid-fedora-38/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/38/SRPMS/
+	cp -v squid-fedora-38/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/38/x86_64/;true
+	cp -v squid-fedora-38/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/38/SRPMS/;true
 
 
 deploy-almalinux-packages: deploy-alma-8-packages deploy-alma-9-packages
@@ -457,20 +481,20 @@ deploy-almalinux-packages: deploy-alma-8-packages deploy-alma-9-packages
 deploy-alma-8-packages:
 	mkdir -p $(REPO_ROOT)/alma/8/x86_64
 	mkdir -p $(REPO_ROOT)/alma/8/SRPMS
-	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/x86_64/
-	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/SRPMS/
+	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/x86_64/;true
+	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/SRPMS/;true
 
 deploy-alma-9-packages:
 	mkdir -p $(REPO_ROOT)/alma/9/x86_64
 	mkdir -p $(REPO_ROOT)/alma/9/SRPMS
-	cp -v squid-almalinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/9/x86_64/
-	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/
+	cp -v squid-almalinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/9/x86_64/;true
+	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/;true
 
 deploy-alma-8-beta-packages:
 	mkdir -p $(REPO_ROOT)/alma/8/beta/x86_64
 	mkdir -p $(REPO_ROOT)/alma/8/beta/SRPMS
-	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/beta/x86_64/
-	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/beta/SRPMS/
+	cp -v squid-almalinux-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/8/beta/x86_64/;true
+	cp -v squid-almalinux-8/srv/packages/*.src.rpm $(REPO_ROOT)/alma/8/beta/SRPMS/;true
 
 
 deploy-almalinux-8-packages: deploy-alma-8-packages
@@ -679,7 +703,7 @@ create-beta-repo-fedora-38:
 	cd $(REPO_ROOT)/fedora/38/beta/SRPMS && createrepo ./
 	touch $(REPO_ROOT)/fedora/38/beta
 
-deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages
+deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages deploy-debian-12-packages
 
 
 deploy-debian-buster-packages: deploy-debian-10-packages
@@ -688,7 +712,8 @@ deploy-buster-packages: deploy-debian-10-packages
 
 deploy-debian-10-packages:
 	mkdir -p $(REPO_ROOT)/debian/10/x86_64
-	cp -v squid-debian10/srv/packages/*.tar $(REPO_ROOT)/debian/10/x86_64/
+	cp -v squid-debian10/srv/packages/*.tar $(REPO_ROOT)/debian/10/x86_64/;true
+
 
 deploy-debian-bullseye-packages: deploy-debian-11-packages
 
@@ -696,7 +721,17 @@ deploy-bullseye-packages: deploy-debian-11-packages
 
 deploy-debian-11-packages:
 	mkdir -p $(REPO_ROOT)/debian/11/x86_64
-	cp -v squid-debian11/srv/packages/*.tar $(REPO_ROOT)/debian/11/x86_64/
+	cp -v squid-debian11/srv/packages/*.tar $(REPO_ROOT)/debian/11/x86_64/;true
+
+
+deploy-debian-bookworm-packages: deploy-debian-12-packages
+
+deploy-bookworm-packages: deploy-debian-12-packages
+
+deploy-debian-12-packages:
+	mkdir -p $(REPO_ROOT)/debian/12/x86_64
+	cp -v squid-debian12/srv/packages/*.tar $(REPO_ROOT)/debian/12/x86_64/;true
+
 
 
 deploy-debian-jessie-packages: deploy-debian-9-packages
@@ -705,37 +740,43 @@ deploy-jessie-packages: deploy-debian-9-packages
 
 deploy-debian-9-packages:
 	mkdir -p $(REPO_ROOT)/debian/9/x86_64
-	cp -v squid-debian9/srv/packages/*.tar $(REPO_ROOT)/debian/9/x86_64/
+	cp -v squid-debian9/srv/packages/*.tar $(REPO_ROOT)/debian/9/x86_64/;true
 
 
 
-deploy-ubuntu-packages: deploy-ubuntu-1604-packages deploy-ubuntu-1804-packages deploy-ubuntu-2004-packages
-
+deploy-ubuntu-packages: deploy-ubuntu-1604-packages deploy-ubuntu-1804-packages deploy-ubuntu-2004-packages deploy-ubuntu-2204-packages deploy-ubuntu-2304-packages
 
 deploy-1604-packages: deploy-ubuntu-1604-packages
 
 deploy-ubuntu-1604-packages:
 	mkdir -p $(REPO_ROOT)/ubuntu/16.04/x86_64
-	cp -v squid-ubuntu1604/srv/packages/*.tar $(REPO_ROOT)/ubuntu/16.04/x86_64/
+	cp -v squid-ubuntu1604/srv/packages/*.tar $(REPO_ROOT)/ubuntu/16.04/x86_64/;true
 
 deploy-1804-packages: deploy-ubuntu-1804-packages
 
 deploy-ubuntu-1804-packages:
 	mkdir -p $(REPO_ROOT)/ubuntu/18.04/x86_64
-	cp -v squid-ubuntu1804/srv/packages/*.tar $(REPO_ROOT)/ubuntu/18.04/x86_64/
+	cp -v squid-ubuntu1804/srv/packages/*.tar $(REPO_ROOT)/ubuntu/18.04/x86_64/;true
 
 
 deploy-2004-packages: deploy-ubuntu-2004-packages
 
 deploy-ubuntu-2004-packages:
 	mkdir -p $(REPO_ROOT)/ubuntu/20.04/x86_64
-	cp -v squid-ubuntu2004/srv/packages/*.tar $(REPO_ROOT)/ubuntu/20.04/x86_64/
+	cp -v squid-ubuntu2004/srv/packages/*.tar $(REPO_ROOT)/ubuntu/20.04/x86_64/;true
 
 deploy-2204-packages: deploy-ubuntu-2204-packages
 
 deploy-ubuntu-2204-packages:
 	mkdir -p $(REPO_ROOT)/ubuntu/22.04/x86_64
-	cp -v squid-ubuntu2204/srv/packages/*.tar $(REPO_ROOT)/ubuntu/22.04/x86_64/
+	cp -v squid-ubuntu2204/srv/packages/*.tar $(REPO_ROOT)/ubuntu/22.04/x86_64/;true
+
+deploy-2304-packages: deploy-ubuntu-2304-packages
+
+deploy-ubuntu-2304-packages:
+	mkdir -p $(REPO_ROOT)/ubuntu/23.04/x86_64
+	cp -v squid-ubuntu2304/srv/packages/*.tar $(REPO_ROOT)/ubuntu/23.04/x86_64/;true
+
 
 clean-rpms-packages:
 	rm -vf squid-centos-7/srv/packages/*.rpm 
