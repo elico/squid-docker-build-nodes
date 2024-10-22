@@ -20,6 +20,7 @@ export SOURCES_FILENAME=$(basename ${SOURCES_URL})
 export BUILDZONE=${HOME}
 export DESTDIR="${BUILDZONE}/fakeroot"
 export PACKAGES_DEST="/srv/packages"
+export PATCHES_DIR="/srv/patches/enabled"
 ## Debian and Ubuntu proxy
 ## Others?
 export PROXY_USER=proxy
@@ -29,9 +30,9 @@ export CPU_COUNT=$(grep processor /proc/cpuinfo | wc -l)
 export USER=$(whoami)
 
 cd ${BUILDZONE}
-sudo mkdir -p "${PACKAGES_DEST}"
-sudo chmod 777 "${PACKAGES_DEST}"
-sudo chown ${USER}: "${PACKAGES_DEST}"
+mkdir -p "${PACKAGES_DEST}"
+chmod 777 "${PACKAGES_DEST}"
+chown ${USER}: "${PACKAGES_DEST}"
 
 cp -v /srv/tostrip ${BUILDZONE}/tostrip
 
@@ -41,9 +42,9 @@ if [[ "${USE_CCACHE}" -eq "1" ]];then
 	ccache -s
 
 	if [[ ! -z "${CCACHE_DIR}" ]]; then
-		sudo mkdir -p "${CCACHE_DIR}"
-		sudo chmod 777 "${CCACHE_DIR}"
-		sudo chown -R "${USER}": "${CCACHE_DIR}"
+		mkdir -p "${CCACHE_DIR}"
+		chmod 777 "${CCACHE_DIR}"
+		chown -R "${USER}": "${CCACHE_DIR}"
 		export PATH=/usr/lib/ccache:${PATH}
 	fi
 
@@ -59,13 +60,18 @@ fi
 
 tar xf "${BUILDZONE}/${SOURCES_FILENAME}" -C "${BUILDZONE}/"
 
+export SOURCES_VERSION=$(echo ${SOURCES_FILENAME} |sed -e 's@\.tar\.bz2$@@g'  |sed -e 's@\.tar\.gz$@@g'|sed -e 's@\.tar\.xz$@@g'|sed -e 's@\.tar$@@g')
+
+## Patch
+cd "${BUILDZONE}/${SOURCES_VERSION}"
+find "${PATCHES_DIR}" -name "*.patch" -exec bash -c "patch -p -u < {}" \;
+##
+
 cd "${BUILDZONE}/confdir"
 pwd
 
-export SOURCES_VERSION=$(echo ${SOURCES_FILENAME} |sed -e 's@\.tar\.bz2$@@g'  |sed -e 's@\.tar\.gz$@@g'|sed -e 's@\.tar\.xz$@@g'|sed -e 's@\.tar$@@g')
-
-if [[ -d "${BUILDZONE}/$SOURCES_VERSION}" ]]; then
-	echo "${BUILDZONE}/$SOURCES_VERSION}"
+if [[ -d "${BUILDZONE}/${SOURCES_VERSION}" ]]; then
+	echo "${BUILDZONE}/${SOURCES_VERSION}"
 fi
 
 ${BUILDZONE}/${SOURCES_VERSION}/configure \
@@ -124,7 +130,6 @@ find ${DESTDIR}/usr/lib/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostri
 find ${DESTDIR}/usr/bin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 find ${DESTDIR}/usr/sbin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 
-
 tar cvfJ ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar.xz -C ${DESTDIR} .
 
 # Delete each elf binary debug file
@@ -167,7 +172,7 @@ tar cvfz ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar.gz -C ${DESTDIR}
 	;;
 
 	*)
-tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin.tar" -C "${DESTDIR}" .
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin.tar -C ${DESTDIR} .
 
 # Find each elf binary
 # strip each elf binary
@@ -175,20 +180,20 @@ find ${DESTDIR}/usr/lib/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostri
 find ${DESTDIR}/usr/bin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 find ${DESTDIR}/usr/sbin/ -type f |grep -v '.debug'|xargs -l1 ${BUILDZONE}/tostrip
 
-tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar" -C "${DESTDIR}" .
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar -C ${DESTDIR} .
 
 # Delete each elf binary debug file
 find ${DESTDIR}/ -type f |grep '.debug'|xargs -l1 rm
 
-tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped-only.tar" -C "${DESTDIR}" .
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped-only.tar -C ${DESTDIR} .
 
 # Unpack full package and then pacakge only debug files
 
-tar xfv "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar" -C "${DESTDIR}"
+tar xfv ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-bin-stripped.tar -C ${DESTDIR}
 
 find ${DESTDIR}/ -type f |grep -v '.debug'|xargs -l1 rm
 
-tar cvf "${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar" -C "${DESTDIR}" .
+tar cvf ${BUILDZONE}/${SOURCES_VERSION}-${ARCH}-debug-only.tar -C ${DESTDIR} .
 	;;
 esac
 

@@ -80,7 +80,7 @@ build-rocky-8: build-rockylinux-8
 
 build-rocky-9: build-rockylinux-9
 
-build-fedora: build-fedora-33 build-fedora-35 build-fedora-36
+build-fedora: build-fedora-33 build-fedora-35 build-fedora-36 build-fedora-40
 
 build-fedora-33:
 	bash build.sh squid-fedora-33
@@ -94,6 +94,10 @@ build-fedora-36:
 build-fedora-38:
 	bash build.sh squid-fedora-38
 
+build-fedora-40:
+	bash build.sh squid-fedora-40
+
+
 fedora: build-fedora
 
 fedora-33: build-fedora-33
@@ -103,6 +107,9 @@ fedora-35: build-fedora-35
 fedora-36: build-fedora-36
 
 fedora-38: build-fedora-38
+
+fedora-40: build-fedora-40
+
 
 
 build-oracle: build-oracle-7 build-oracle-8 
@@ -146,6 +153,9 @@ build-ubuntu-22.04:
 
 build-ubuntu-23.04:
 	bash build.sh squid-ubuntu2304 
+
+build-ubuntu-24.04:
+	bash build.sh squid-ubuntu2404 
 
 
 debian: build-debian
@@ -202,6 +212,14 @@ clean-build-flags:
 
 clean-all-containers: clean-debian-container clean-oracle-containers clean-amzn-containers clean-ubuntu-containers clean-fedora-containers clean-centos-containers
 
+clean-alma-containers: clean-alma-8-container clean-alma-9-container
+
+clean-alma-8-container:
+	podman rmi $$(head -1 squid-almalinux-8/podmanimage ) -f;true
+
+clean-alma-9-container:
+	podman rmi $$(head -1 squid-almalinux-9/podmanimage ) -f;true
+
 clean-centos-containers: clean-centos-7-container clean-centos-8-container clean-centos-9-container
 
 clean-centos-7-container:
@@ -213,7 +231,7 @@ clean-centos-8-container:
 clean-centos-9-container:
 	podman rmi squidbuild:centos9 -f;true
 
-clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container clean-fedora-36-container clean-fedora-38-container
+clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container clean-fedora-36-container clean-fedora-38-container clean-fedora-40-container
 
 clean-fedora-33-container:
 	podman rmi squidbuild:fedora33 -f;true
@@ -226,6 +244,9 @@ clean-fedora-36-container:
 
 clean-fedora-38-container:
 	podman rmi squidbuild:fedora38 -f;true
+
+clean-fedora-40-container:
+	podman rmi squidbuild:fedora40 -f;true
 
 clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container  clean-ubuntu-22.04-container clean-ubuntu-23.04-container
 
@@ -243,6 +264,10 @@ clean-ubuntu-22.04-container:
 
 clean-ubuntu-23.04-container:
 	podman rmi squidbuild:ubuntu2304 -f;true
+
+clean-ubuntu-24.04-container:
+	podman rmi squidbuild:ubuntu2404 -f;true
+
 
 
 clean-amzn-containers: clean-amzn-1-container clean-amzn-2-container
@@ -449,7 +474,7 @@ deploy-centos-8-beta-packages:
 	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/beta/x86_64/;true
 	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/beta/SRPMS/
 
-deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages deploy-fedora-36-packages deploy-fedora-38-packages
+deploy-fedora-packages: deploy-fedora-33-packages deploy-fedora-35-packages deploy-fedora-36-packages deploy-fedora-38-packages deploy-fedora-40-packages
 
 deploy-fedora-33-packages:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
@@ -474,6 +499,12 @@ deploy-fedora-38-packages:
 	mkdir -p $(REPO_ROOT)/fedora/38/SRPMS
 	cp -v squid-fedora-38/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/38/x86_64/;true
 	cp -v squid-fedora-38/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/38/SRPMS/;true
+
+deploy-fedora-40-packages:
+	mkdir -p $(REPO_ROOT)/fedora/40/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/40/SRPMS
+	cp -v squid-fedora-40/srv/packages/*.x86_64.rpm $(REPO_ROOT)/fedora/40/x86_64/;true
+	cp -v squid-fedora-40/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/40/SRPMS/;true
 
 
 deploy-almalinux-packages: deploy-alma-8-packages deploy-alma-9-packages
@@ -526,7 +557,7 @@ create-repo-centos9:
 	cd $(REPO_ROOT)/centos/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/centos/9
 
-create-repo-fedora: create-repo-fedora33 create-repo-fedora34 create-repo-fedora36 create-repo-fedora38
+create-repo-fedora: create-repo-fedora33 create-repo-fedora34 create-repo-fedora36 create-repo-fedora38 create-repo-fedora40
 
 create-repo-fedora33:
 	mkdir -p $(REPO_ROOT)/fedora/33/x86_64
@@ -555,6 +586,13 @@ create-repo-fedora38:
 	cd $(REPO_ROOT)/fedora/38/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/fedora/38/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/fedora/38
+
+create-repo-fedora40:
+	mkdir -p $(REPO_ROOT)/fedora/40/x86_64
+	mkdir -p $(REPO_ROOT)/fedora/40/SRPMS
+	cd $(REPO_ROOT)/fedora/40/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/fedora/40/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/fedora/40
 
 
 create-repo-almalinux: create-repo-alma
@@ -594,6 +632,10 @@ create-repo-rocky9:
 	cd $(REPO_ROOT)/rocky/9/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/rocky/9/x96_64 && createrepo ./
 	touch $(REPO_ROOT)/rocky/9
+
+create-repo-rocky-8: create-repo-rocky8
+
+create-repo-rocky-9: create-repo-rocky9
 
 
 create-beta-repo-rocky8:
@@ -703,7 +745,7 @@ create-beta-repo-fedora-38:
 	cd $(REPO_ROOT)/fedora/38/beta/SRPMS && createrepo ./
 	touch $(REPO_ROOT)/fedora/38/beta
 
-deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages deploy-debian-12-packages
+deploy-debian-packages: deploy-debian-10-packages deploy-debian-9-packages deploy-debian-12-packages deploy-debian-11-packages
 
 
 deploy-debian-buster-packages: deploy-debian-10-packages
@@ -777,6 +819,10 @@ deploy-ubuntu-2304-packages:
 	mkdir -p $(REPO_ROOT)/ubuntu/23.04/x86_64
 	cp -v squid-ubuntu2304/srv/packages/*.tar $(REPO_ROOT)/ubuntu/23.04/x86_64/;true
 
+deploy-ubuntu-2404-packages:
+	mkdir -p $(REPO_ROOT)/ubuntu/24.04/x86_64
+	cp -v squid-ubuntu2404/srv/packages/*.tar $(REPO_ROOT)/ubuntu/24.04/x86_64/;true
+
 
 clean-rpms-packages:
 	rm -vf squid-centos-7/srv/packages/*.rpm 
@@ -791,3 +837,4 @@ clean-rpms-packages:
 	rm -vf squid-fedora-35/srv/packages/*.rpm
 	rm -vf squid-fedora-36/srv/packages/*.rpm
 	rm -vf squid-fedora-38/srv/packages/*.rpm
+	rm -vf squid-fedora-40/srv/packages/*.rpm
