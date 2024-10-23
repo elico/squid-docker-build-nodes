@@ -145,6 +145,10 @@ mkdir -p src/icmp/tests
 mkdir -p tools/squidclient/tests
 mkdir -p tools/tests
 
+%define _lto_cflags %{nil}
+
+bash bootstrap.sh
+
 %configure \
   --exec_prefix=/usr \
   --libexecdir=%{_libdir}/squid \

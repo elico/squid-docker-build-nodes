@@ -142,6 +142,10 @@ mkdir -p src/icmp/tests
 mkdir -p tools/squidclient/tests
 mkdir -p tools/tests
 
+%define _lto_cflags %{nil}
+
+bash bootstrap.sh
+
 %configure \
   --exec_prefix=/usr \
   --libexecdir=%{_libdir}/squid \
@@ -188,8 +192,7 @@ mkdir -p tools/tests
   --disable-arch-native \
   --without-nettle
 
-#  --enable-ecap \
-
+#LDFLAGS=-fno-lto 
 make \
 	DEFAULT_SWAP_DIR='/var/spool/squid' \
 	%{?_smp_mflags}

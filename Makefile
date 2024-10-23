@@ -439,7 +439,7 @@ deploy-rocky-8-packages:
 deploy-rocky-9-packages:
 	mkdir -p $(REPO_ROOT)/rocky/9/x86_64
 	mkdir -p $(REPO_ROOT)/rocky/9/SRPMS
-	cp -v squid-rockylinux-9/srv/packages/*.x96_64.rpm $(REPO_ROOT)/rocky/9/x96_64/;true
+	cp -v squid-rockylinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/9/x86_64/;true
 	cp -v squid-rockylinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/9/SRPMS/;true
 
 deploy-rocky-8-beta-packages:
@@ -630,7 +630,7 @@ create-repo-rocky8:
 
 create-repo-rocky9:
 	cd $(REPO_ROOT)/rocky/9/SRPMS && createrepo ./
-	cd $(REPO_ROOT)/rocky/9/x96_64 && createrepo ./
+	cd $(REPO_ROOT)/rocky/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/rocky/9
 
 create-repo-rocky-8: create-repo-rocky8
