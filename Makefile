@@ -18,7 +18,7 @@ get-latest-url-from-gogs:
 	curl -s http://gogs.ngtech.home/NgTech-Home/squid-latest/raw/main/latest.json |jq -r .url > latest-squid-url.txt
 
 get-latest-url-from-github:
-	curl -s https://raw.githubusercontent.com/elico/squid-latest/main/latest.json |jq -r .url > latest-squid-url.txt
+	curl -s https://raw.githubusercontent.com/elico/squid-latest/refs/heads/main/latest.json |jq -r .url > latest-squid-url.txt
 
 build-rpms: build-oracle build-centos build-amzn build-alma build-rocky
 
@@ -392,7 +392,7 @@ deploy-centos-8-packages:
 	mkdir -p $(REPO_ROOT)/centos/8/x86_64
 	mkdir -p $(REPO_ROOT)/centos/8/SRPMS
 	cp -v squid-centos-8/srv/packages/*.x86_64.rpm $(REPO_ROOT)/centos/8/x86_64/;true
-	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/SRPMS/
+	cp -v squid-centos-8/srv/packages/*.src.rpm $(REPO_ROOT)/centos/8/SRPMS/;true
 
 deploy-centos-9-packages:
 	mkdir -p $(REPO_ROOT)/centos/9/x86_64
