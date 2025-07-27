@@ -18,7 +18,7 @@ get-latest-url-from-gogs:
 	curl -s http://gogs.ngtech.home/NgTech-Home/squid-latest/raw/main/latest.json |jq -r .url > latest-squid-url.txt
 
 get-latest-url-from-github:
-	curl -s https://raw.githubusercontent.com/elico/squid-latest/refs/heads/main/latest.json |jq -r .url > latest-squid-url.txt
+	curl -H 'cache-control: max-age=0' -s https://raw.githubusercontent.com/elico/squid-latest/refs/heads/main/latest.json |jq -r .url > latest-squid-url.txt
 
 build-rpms: build-oracle build-centos build-amzn build-alma build-rocky
 
@@ -48,11 +48,14 @@ centos8: build-centos-8
 centos9: build-centos-9
 
 
-build-almalinux: build-almalinux-8 build-almalinux-9
+build-almalinux: build-almalinux-8 build-almalinux-9 build-almalinux-10
 
 almalinux8: build-almalinux-8
 
 almalinux9: build-almalinux-9
+
+almalinux10: build-almalinux-10
+
 
 build-almalinux-8:
 	bash build.sh squid-almalinux-8
@@ -60,13 +63,16 @@ build-almalinux-8:
 build-almalinux-9:
 	bash build.sh squid-almalinux-9
 
+build-almalinux-10:
+	bash build.sh squid-almalinux-10
+
 build-alma-8: build-almalinux-8
 
 build-alma-9: build-almalinux-9
 
 build-alma: build-almalinux
 
-build-rockylinux: build-rockylinux-8 build-rockylinux-9
+build-rockylinux: build-rockylinux-8 build-rockylinux-9 build-rockylinux-10
 
 build-rockylinux-8:
 	bash build.sh squid-rockylinux-8
@@ -74,11 +80,16 @@ build-rockylinux-8:
 build-rockylinux-9:
 	bash build.sh squid-rockylinux-9
 
+build-rockylinux-10:
+	bash build.sh squid-rockylinux-10
+
 build-rocky: build-rockylinux
 
 build-rocky-8: build-rockylinux-8
 
 build-rocky-9: build-rockylinux-9
+
+build-rocky-10: build-rockylinux-10
 
 build-fedora: build-fedora-33 build-fedora-35 build-fedora-36 build-fedora-40
 
@@ -219,6 +230,9 @@ clean-alma-8-container:
 
 clean-alma-9-container:
 	podman rmi $$(head -1 squid-almalinux-9/podmanimage ) -f;true
+
+clean-alma-10-container:
+	podman rmi $$(head -1 squid-almalinux-10/podmanimage ) -f;true
 
 clean-centos-containers: clean-centos-7-container clean-centos-8-container clean-centos-9-container
 
@@ -428,7 +442,7 @@ deploy-oracle-8-beta-packages:
 	cp -v squid-oracle-8/srv/packages/*.src.rpm $(REPO_ROOT)/oracle/8/beta/SRPMS/;true
 
 
-deploy-rocky-packages: deploy-rocky-8-packages deploy-rocky-9-packages
+deploy-rocky-packages: deploy-rocky-8-packages deploy-rocky-9-packages deploy-rocky-10-packages
 
 deploy-rocky-8-packages:
 	mkdir -p $(REPO_ROOT)/rocky/8/x86_64
@@ -441,6 +455,13 @@ deploy-rocky-9-packages:
 	mkdir -p $(REPO_ROOT)/rocky/9/SRPMS
 	cp -v squid-rockylinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/9/x86_64/;true
 	cp -v squid-rockylinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/9/SRPMS/;true
+
+deploy-rocky-10-packages:
+	mkdir -p $(REPO_ROOT)/rocky/10/x86_64
+	mkdir -p $(REPO_ROOT)/rocky/10/SRPMS
+	cp -v squid-rockylinux-10/srv/packages/*.x86_64.rpm $(REPO_ROOT)/rocky/10/x86_64/;true
+	cp -v squid-rockylinux-10/srv/packages/*.src.rpm $(REPO_ROOT)/rocky/10/SRPMS/;true
+
 
 deploy-rocky-8-beta-packages:
 	mkdir -p $(REPO_ROOT)/rocky/8/beta/x86_64
@@ -507,7 +528,7 @@ deploy-fedora-40-packages:
 	cp -v squid-fedora-40/srv/packages/*.src.rpm $(REPO_ROOT)/fedora/40/SRPMS/;true
 
 
-deploy-almalinux-packages: deploy-alma-8-packages deploy-alma-9-packages
+deploy-almalinux-packages: deploy-alma-8-packages deploy-alma-9-packages deploy-alma-10-packages
 
 deploy-alma-8-packages:
 	mkdir -p $(REPO_ROOT)/alma/8/x86_64
@@ -521,6 +542,12 @@ deploy-alma-9-packages:
 	cp -v squid-almalinux-9/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/9/x86_64/;true
 	cp -v squid-almalinux-9/srv/packages/*.src.rpm $(REPO_ROOT)/alma/9/SRPMS/;true
 
+deploy-alma-10-packages:
+	mkdir -p $(REPO_ROOT)/alma/10/x86_64
+	mkdir -p $(REPO_ROOT)/alma/10/SRPMS
+	cp -v squid-almalinux-10/srv/packages/*.x86_64.rpm $(REPO_ROOT)/alma/10/x86_64/;true
+	cp -v squid-almalinux-10/srv/packages/*.src.rpm $(REPO_ROOT)/alma/10/SRPMS/;true
+
 deploy-alma-8-beta-packages:
 	mkdir -p $(REPO_ROOT)/alma/8/beta/x86_64
 	mkdir -p $(REPO_ROOT)/alma/8/beta/SRPMS
@@ -531,6 +558,9 @@ deploy-alma-8-beta-packages:
 deploy-almalinux-8-packages: deploy-alma-8-packages
 
 deploy-almalinux-9-packages: deploy-alma-9-packages
+
+deploy-almalinux-10-packages: deploy-alma-10-packages
+
 
 create-repo-rpms: create-repo-alma create-repo-rocky create-repo-oracle create-repo-fedora create-repo-amzn
 
@@ -597,7 +627,7 @@ create-repo-fedora40:
 
 create-repo-almalinux: create-repo-alma
 
-create-repo-alma: create-repo-alma8 create-repo-alma9
+create-repo-alma: create-repo-alma8 create-repo-alma9 create-repo-alma10
 
 create-repo-alma8:
 	mkdir -p $(REPO_ROOT)/alma/8/x86_64
@@ -613,6 +643,13 @@ create-repo-alma9:
 	cd $(REPO_ROOT)/alma/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/alma/9
 
+create-repo-alma10:
+	mkdir -p $(REPO_ROOT)/alma/10/x86_64
+	mkdir -p $(REPO_ROOT)/alma/10/SRPMS
+	cd $(REPO_ROOT)/alma/10/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/alma/10/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/alma/10
+
 
 create-beta-repo-alma8:
 	cd $(REPO_ROOT)/alma/8/beta/SRPMS && createrepo ./
@@ -621,7 +658,7 @@ create-beta-repo-alma8:
 
 create-repo-rockylinux: create-repo-rocky
 
-create-repo-rocky: create-repo-rocky8 create-repo-rocky9
+create-repo-rocky: create-repo-rocky8 create-repo-rocky9 create-repo-rocky10
 
 create-repo-rocky8:
 	cd $(REPO_ROOT)/rocky/8/SRPMS && createrepo ./
@@ -633,9 +670,16 @@ create-repo-rocky9:
 	cd $(REPO_ROOT)/rocky/9/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/rocky/9
 
+create-repo-rocky10:
+	cd $(REPO_ROOT)/rocky/10/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/rocky/10/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/rocky/10
+
 create-repo-rocky-8: create-repo-rocky8
 
 create-repo-rocky-9: create-repo-rocky9
+
+create-repo-rocky-10: create-repo-rocky10
 
 
 create-beta-repo-rocky8:

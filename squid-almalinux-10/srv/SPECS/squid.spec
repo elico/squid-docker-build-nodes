@@ -7,7 +7,7 @@ Version:  %{version_number}
 Release:  %{release_number}%{?dist}
 Summary:  The Squid proxy caching server
 Epoch:    7
-Packager: Eliezer Croitoru <eliezer@ngtech.co.il>
+Packager: Eliezer Croitoru <ngtech1ltd@gmail.com>
 Vendor:   NgTech Ltd
 # See CREDITS for breakdown of non GPLv2+ code
 License:  GPLv2+ and (LGPLv2+ and MIT and BSD and Public Domain)
@@ -63,16 +63,14 @@ BuildRequires: libcap-devel
 # eCAP and some other need libltdl
 BuildRequires: libtool libtool-ltdl-devel
 # eCAP 1.0.0
-#BuildRequires: libecap-devel libecap
+##BuildRequires: libecap-devel libecap
 # Required to allow debug package auto creation
 BuildRequires: redhat-rpm-config
 # Required by couple external acl helpers
 BuildRequires: libdb-devel
-# Required for specific features
-BuildRequires: libnetfilter_conntrack-devel
 # Adding for future build use
 BuildRequires: gnutls-devel
-
+BuildRequires: libnetfilter_conntrack-devel
 # Required to validate auto requires AutoReqProv: no
 ## aaaAutoReqProv: no
 
@@ -106,9 +104,11 @@ lookup program (dnsserver), a program for retrieving FTP data
 %if "%{version_number}" > "5.0" && "%{version_number}" < "5.6"
 
 %patch4
+
 %endif
 
 %if "%{version_number}" > "5.0" && "%{version_number}" > "5.5"
+
 %patch9
 
 %endif
@@ -124,7 +124,6 @@ lookup program (dnsserver), a program for retrieving FTP data
 #%patch7
 
 %endif
-
 
 %package helpers
 Group: System Environment/Daemons
@@ -163,6 +162,7 @@ bash bootstrap.sh
   --enable-auth-digest="file,LDAP,eDirectory" \
   --enable-auth-negotiate="kerberos,wrapper" \
   --enable-external-acl-helpers="wbinfo_group,kerberos_ldap_group,LDAP_group,delayer,file_userip,SQL_session,unix_group,session,time_quota" \
+  --enable-security-cert-validators \
   --enable-cache-digests \
   --enable-cachemgr-hostname=localhost \
   --enable-delay-pools \
@@ -191,6 +191,7 @@ bash bootstrap.sh
   --with-included-ltdl \
   --disable-arch-native \
   --without-nettle
+
 #  --enable-ecap \
 
 make \
@@ -221,13 +222,21 @@ install -m 755 %{SOURCE7} $RPM_BUILD_ROOT%{_sbindir}/squidshut.sh
 
 mkdir -p $RPM_BUILD_ROOT/var/log/squid
 mkdir -p $RPM_BUILD_ROOT/var/spool/squid
-#chmod 644 contrib/url-normalizer.pl contrib/rredir.* contrib/user-agents.pl
 iconv -f ISO88591 -t UTF8 ChangeLog -o ChangeLog.tmp
 mv -f ChangeLog.tmp ChangeLog
 
 # Move the MIB definition to the proper place (and name)
 mkdir -p $RPM_BUILD_ROOT/usr/share/snmp/mibs
 mv $RPM_BUILD_ROOT/usr/share/squid/mib.txt $RPM_BUILD_ROOT/usr/share/snmp/mibs/SQUID-MIB.txt
+
+# bug #447156
+# /usr/share/squid/errors/zh-cn and /usr/share/squid/errors/zh-tw were
+# substituted directories substituted by symlinks and RPM, can't handle
+# this change
+#rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
+#rm -f $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
+#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hant $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-tw
+#cp -R --preserve=all $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-hans $RPM_BUILD_ROOT%{_prefix}/share/squid/errors/zh-cn
 
 # squid.conf.documented is documentation. We ship that in doc/
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/squid/squid.conf.documented
@@ -241,7 +250,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc COPYING README CREDITS ChangeLog QUICKSTART src/squid.conf.documented
-#%doc contrib/url-normalizer.pl contrib/rredir.* contrib/user-agents.pl
 
 %attr(755,root,root) %dir %{_sysconfdir}/squid
 %attr(755,root,root) %dir %{_libdir}/squid
@@ -269,8 +277,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_sbindir}/squid
 %{_bindir}/squidclient
 %{_bindir}/purge
-%{_mandir}/man8/*
-%{_mandir}/man1/*
+
+%{_mandir}/man1/squidclient.1.gz
+%{_mandir}/man8/squid.8.gz
+%{_mandir}/man1/purge.1.gz
+
 %{_libdir}/squid/diskd
 %{_libdir}/squid/log_file_daemon
 %{_libdir}/squid/unlinkd
@@ -284,7 +295,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/squid/basic_getpwnam_auth
 %{_libdir}/squid/basic_ldap_auth
 %{_libdir}/squid/basic_ncsa_auth
-#%{_libdir}/squid/basic_nis_auth
 %{_libdir}/squid/basic_pam_auth
 %{_libdir}/squid/basic_pop3_auth
 %{_libdir}/squid/basic_radius_auth
@@ -294,7 +304,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/squid/basic_fake_auth
 %{_libdir}/squid/cachemgr.cgi
 %{_libdir}/squid/cert_tool
-#%{_libdir}/squid/cert_valid.pl
 %{_libdir}/squid/digest_file_auth
 %{_libdir}/squid/digest_ldap_auth
 %{_libdir}/squid/digest_edirectory_auth
@@ -307,8 +316,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/squid/negotiate_kerberos_auth_test
 %{_libdir}/squid/negotiate_wrapper_auth
 %{_libdir}/squid/ntlm_fake_auth
-#%{_libdir}/squid/ntlm_smb_lm_auth
-#%{_libdir}/squid/ssl_crtd
 %{_libdir}/squid/storeid_file_rewrite
 %{_libdir}/squid/url_fake_rewrite
 %{_libdir}/squid/url_fake_rewrite.sh
@@ -325,10 +332,31 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/squid/security_file_certgen
 %{_libdir}/squid/url_lfs_rewrite
 
-#error: File not found: /home/rpm/rpmbuild/BUILDROOT/squid-4.0.5-1.el7.centos.x86_64/usr/lib64/squid/cert_valid.pl
-#error: File not found: /home/rpm/rpmbuild/BUILDROOT/squid-4.0.5-1.el7.centos.x86_64/usr/lib64/squid/ntlm_smb_lm_auth
-#error: File not found: /home/rpm/rpmbuild/BUILDROOT/squid-4.0.5-1.el7.centos.x86_64/usr/lib64/squid/ssl_crtd
-
+%{_mandir}/man8/basic_db_auth.8.gz
+%{_mandir}/man8/basic_getpwnam_auth.8.gz
+%{_mandir}/man8/basic_ldap_auth.8.gz
+%{_mandir}/man8/basic_ncsa_auth.8.gz
+%{_mandir}/man8/basic_pam_auth.8.gz
+%{_mandir}/man8/basic_pop3_auth.8.gz
+%{_mandir}/man8/basic_radius_auth.8.gz
+%{_mandir}/man8/basic_sasl_auth.8.gz
+%{_mandir}/man8/cachemgr.cgi.8.gz
+%{_mandir}/man8/digest_file_auth.8.gz
+%{_mandir}/man8/ext_delayer_acl.8.gz
+%{_mandir}/man8/ext_file_userip_acl.8.gz
+%{_mandir}/man8/ext_ldap_group_acl.8.gz
+%{_mandir}/man8/ext_session_acl.8.gz
+%{_mandir}/man8/ext_sql_session_acl.8.gz
+%{_mandir}/man8/ext_time_quota_acl.8.gz
+%{_mandir}/man8/ext_unix_group_acl.8.gz
+%{_mandir}/man8/ext_wbinfo_group_acl.8.gz
+%{_mandir}/man8/helper-mux.8.gz
+%{_mandir}/man8/log_db_daemon.8.gz
+%{_mandir}/man8/negotiate_kerberos_auth.8.gz
+%{_mandir}/man8/security_fake_certverify.8.gz
+%{_mandir}/man8/security_file_certgen.8.gz
+%{_mandir}/man8/storeid_file_rewrite.8.gz
+%{_mandir}/man8/url_lfs_rewrite.8.gz
 
 %pre
 if ! getent group squid >/dev/null 2>&1; then
@@ -369,5 +397,7 @@ fi
     chmod 750 /var/lib/samba/winbindd_privileged  >/dev/null 2>&1 || :
 
 %changelog
-* Mon Aug 28 2023 Eliezer Croitoru <ngtech1ltd@gmail.com>
-- Release 6.2-1 This is a testing version.
+* Wed Aug 26 2020 Eliezer Croitoru <ngtech1ltd@gmail.com>
+- Release 4.13 Stable.
+
+

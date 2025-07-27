@@ -24,8 +24,8 @@ cd "${BUILD}"
 DOCKER_IMAGE=`cat podmanimage`
 echo "${DOCKER_IMAGE}"
 stat podmanimage && \
-	( podman image inspect  "${DOCKER_IMAGE}" || buildah bud -t "${DOCKER_IMAGE}" . )
-podman run -it \
+	( docker image inspect  "${DOCKER_IMAGE}" || docker build -t "${DOCKER_IMAGE}" . )
+docker run -it \
         -e COMPRESSION="${COMPRESSION}" \
         -e DEBUG_MODE="${DEBUG_MODE}" \
         -e USE_CCACHE="${USE_CCACHE}" \
