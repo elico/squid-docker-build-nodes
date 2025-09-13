@@ -18,7 +18,7 @@ get-latest-url-from-gogs:
 	curl -s http://gogs.ngtech.home/NgTech-Home/squid-latest/raw/main/latest.json |jq -r .url > latest-squid-url.txt
 
 get-latest-url-from-github:
-	curl -H 'cache-control: max-age=0' -s https://raw.githubusercontent.com/elico/squid-latest/refs/heads/main/latest.json |jq -r .url > latest-squid-url.txt
+	curl   -H 'accept-language: en-US,en;q=0.9,he;q=0.8' -H 'cache-control: no-cache' -s https://raw.githubusercontent.com/elico/squid-latest/refs/heads/main/latest.json |jq -r .url > latest-squid-url.txt
 
 build-rpms: build-oracle build-centos build-amzn build-alma build-rocky
 
@@ -108,6 +108,8 @@ build-fedora-38:
 build-fedora-40:
 	bash build.sh squid-fedora-40
 
+build-fedora-42:
+	bash build.sh squid-fedora-42
 
 fedora: build-fedora
 
@@ -121,7 +123,7 @@ fedora-38: build-fedora-38
 
 fedora-40: build-fedora-40
 
-
+fedora-42: build-fedora-42
 
 build-oracle: build-oracle-7 build-oracle-8 
 

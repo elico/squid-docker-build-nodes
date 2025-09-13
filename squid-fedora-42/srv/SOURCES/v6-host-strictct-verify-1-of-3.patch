@@ -1,0 +1,33 @@
+--- src/client_side_request.cc	2022-04-30 13:34:04.000000000 +0300
++++ src/client_side_request.cc	2022-05-01 22:03:11.237125396 +0300
+@@ -522,20 +522,30 @@
+     http->request->recordLookup(dns);
+ 
+     // Is the NAT destination IP in DNS?
+     if (ia && ia->have(clientConn->local)) {
+         debugs(85, 3, "validate IP " << clientConn->local << " possible from Host:");
+         http->request->flags.hostVerified = true;
+         http->doCallouts();
+         return;
+     }
+     debugs(85, 3, "FAIL: validate IP " << clientConn->local << " possible from Host:");
++    if (http->request->flags.intercepted || http->request->flags.interceptTproxy) {
++        if (!Config.onoff.interceptHostStrictVerify && http->request->method == Http::METHOD_CONNECT) {
++            debugs(85, 3, "Forcing Host verified for: " << clientConn->local << " possible from Host:" << http->request->effectiveRequestUri());
++            http->request->flags.hostVerified = true;
++            http->request->flags.cachable = false;
++            http->request->flags.hierarchical = false;
++            http->doCallouts();
++            return;
++        }
++    }
+     hostHeaderVerifyFailed("local IP", "any domain IP");
+ }
+ 
+ void
+ ClientRequestContext::hostHeaderVerifyFailed(const char *A, const char *B)
+ {
+     // IP address validation for Host: failed. Admin wants to ignore them.
+     // NP: we do not yet handle CONNECT tunnels well, so ignore for them
+     if (!Config.onoff.hostStrictVerify && http->request->method != Http::METHOD_CONNECT) {
+         debugs(85, 3, "SECURITY ALERT: Host header forgery detected on " << http->getConn()->clientConnection <<

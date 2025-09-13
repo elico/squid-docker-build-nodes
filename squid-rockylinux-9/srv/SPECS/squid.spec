@@ -256,7 +256,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(750,squid,squid) %dir /var/spool/squid
 
 %config(noreplace) %attr(640,root,squid) %{_sysconfdir}/squid/squid.conf
-%config(noreplace) %attr(644,root,squid) %{_sysconfdir}/squid/cachemgr.conf
 %config(noreplace) %{_sysconfdir}/squid/mime.conf
 %config(noreplace) %{_sysconfdir}/squid/errorpage.css
 %config(noreplace) %{_sysconfdir}/sysconfig/squid
@@ -264,7 +263,6 @@ rm -rf $RPM_BUILD_ROOT
 %config %{_sysconfdir}/squid/squid.conf.default
 %config %{_sysconfdir}/squid/mime.conf.default
 %config %{_sysconfdir}/squid/errorpage.css.default
-%config %{_sysconfdir}/squid/cachemgr.conf.default
 %config(noreplace) %{_sysconfdir}/pam.d/squid
 %config(noreplace) %{_sysconfdir}/logrotate.d/squid
 
@@ -274,12 +272,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_sbindir}/squidshut.sh
 %{_datadir}/squid/icons
 %{_sbindir}/squid
-%{_bindir}/squidclient
-%{_bindir}/purge
 
-%{_mandir}/man1/squidclient.1.gz
 %{_mandir}/man8/squid.8.gz
-%{_mandir}/man1/purge.1.gz
 
 %{_libdir}/squid/diskd
 %{_libdir}/squid/log_file_daemon
@@ -301,7 +295,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/squid/basic_smb_auth
 %{_libdir}/squid/basic_smb_auth.sh
 %{_libdir}/squid/basic_fake_auth
-%{_libdir}/squid/cachemgr.cgi
 %{_libdir}/squid/cert_tool
 %{_libdir}/squid/digest_file_auth
 %{_libdir}/squid/digest_ldap_auth
@@ -339,7 +332,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/basic_pop3_auth.8.gz
 %{_mandir}/man8/basic_radius_auth.8.gz
 %{_mandir}/man8/basic_sasl_auth.8.gz
-%{_mandir}/man8/cachemgr.cgi.8.gz
 %{_mandir}/man8/digest_file_auth.8.gz
 %{_mandir}/man8/ext_delayer_acl.8.gz
 %{_mandir}/man8/ext_file_userip_acl.8.gz
