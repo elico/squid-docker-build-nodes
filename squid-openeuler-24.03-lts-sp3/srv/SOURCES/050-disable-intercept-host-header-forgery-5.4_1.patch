@@ -1,0 +1,53 @@
+--- src/client_side_request.cc	2022-02-07 08:46:21.000000000 +0200
++++ src/client_side_request.cc	2022-02-09 11:58:02.295721457 +0200
+@@ -519,40 +519,50 @@
+     ClientRequestContext *c = static_cast<ClientRequestContext*>(data);
+     c->hostHeaderIpVerify(ia, dns);
+ }
+ 
+ void
+ ClientRequestContext::hostHeaderIpVerify(const ipcache_addrs* ia, const Dns::LookupDetails &dns)
+ {
+     Comm::ConnectionPointer clientConn = http->getConn()->clientConnection;
+ 
+     // note the DNS details for the transaction stats.
+     http->request->recordLookup(dns);
+ 
+     // Is the NAT destination IP in DNS?
+     if (ia && ia->have(clientConn->local)) {
+         debugs(85, 3, "validate IP " << clientConn->local << " possible from Host:");
+         http->request->flags.hostVerified = true;
+         http->doCallouts();
+         return;
+     }
+     debugs(85, 3, HERE << "FAIL: validate IP " << clientConn->local << " possible from Host:");
++    if (http->request->flags.intercepted || http->request->flags.interceptTproxy) {
++        if (!Config.onoff.interceptHostStrictVerify && http->request->method == Http::METHOD_CONNECT) {
++            debugs(85, 3, "Forcing Host verified for: " << clientConn->local << " possible from Host:" << http->request->effectiveRequestUri());
++            http->request->flags.hostVerified = true;
++            http->request->flags.cachable = false;
++            http->request->flags.hierarchical = false;
++            http->doCallouts();
++            return;
++        }
++    }
+     hostHeaderVerifyFailed("local IP", "any domain IP");
+ }
+ 
+ void
+ ClientRequestContext::hostHeaderVerifyFailed(const char *A, const char *B)
+ {
+     // IP address validation for Host: failed. Admin wants to ignore them.
+     // NP: we do not yet handle CONNECT tunnels well, so ignore for them
+     if (!Config.onoff.hostStrictVerify && http->request->method != Http::METHOD_CONNECT) {
+         debugs(85, 3, "SECURITY ALERT: Host header forgery detected on " << http->getConn()->clientConnection <<
+                " (" << A << " does not match " << B << ") on URL: " << http->request->effectiveRequestUri());
+ 
+         // NP: it is tempting to use 'flags.noCache' but that is all about READing cache data.
+         // The problems here are about WRITE for new cache content, which means flags.cachable
+         http->request->flags.cachable = false; // MUST NOT cache (for now)
+         // XXX: when we have updated the cache key to base on raw-IP + URI this cacheable limit can go.
+         http->request->flags.hierarchical = false; // MUST NOT pass to peers (for now)
+         // XXX: when we have sorted out the best way to relay requests properly to peers this hierarchical limit can go.
+         http->doCallouts();
+         return;

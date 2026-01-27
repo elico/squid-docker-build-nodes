@@ -1,0 +1,27 @@
+--- src/AclRegs.cc	2022-04-30 13:34:04.000000000 +0300
++++ src/AclRegs.cc	2022-05-02 22:43:34.900303464 +0300
+@@ -155,22 +155,22 @@
+     RegisterMaker("squid_error", [](TypeName name)->ACL* { return new ACLStrategised<err_type>(new ACLSquidErrorData, new ACLSquidErrorStrategy, name); });
+     RegisterMaker("connections_encrypted", [](TypeName name)->ACL* { return new Acl::ConnectionsEncrypted(name); });
+     RegisterMaker("tag", [](TypeName name)->ACL* { return new ACLStrategised<const char *>(new ACLStringData, new ACLTagStrategy, name); });
+     RegisterMaker("note", [](TypeName name)->ACL* { return new ACLStrategised<NotePairs::Entry*>(new ACLNoteData, new ACLNoteStrategy, name); });
+     RegisterMaker("annotate_client", [](TypeName name)->ACL* { return new ACLStrategised<NotePairs::Entry*>(new ACLAnnotationData, new ACLAnnotateClientStrategy, name); });
+     RegisterMaker("annotate_transaction", [](TypeName name)->ACL* { return new ACLStrategised<NotePairs::Entry*>(new ACLAnnotationData, new ACLAnnotateTransactionStrategy, name); });
+     RegisterMaker("has", [](TypeName name)->ACL* {return new ACLStrategised<ACLChecklist *>(new ACLHasComponentData, new ACLHasComponentStrategy, name); });
+     RegisterMaker("transaction_initiator", [](TypeName name)->ACL* {return new TransactionInitiator(name);});
+ 
+ #if USE_LIBNETFILTERCONNTRACK
+-    RegisterMaker("clientside_mark", [](TypeName name)->ACL* { return new Acl::ConnMark; });
+-    RegisterMaker("client_connection_mark", [](TypeName name)->ACL* { return new Acl::ConnMark; });
++    RegisterMaker("clientside_mark", [](TypeName)->ACL* { return new Acl::ConnMark; });
++    RegisterMaker("client_connection_mark", [](TypeName)->ACL* { return new Acl::ConnMark; });
+ #endif
+ 
+ #if USE_OPENSSL
+     RegisterMaker("ssl_error", [](TypeName name)->ACL* { return new ACLStrategised<const Security::CertErrors *>(new ACLSslErrorData, new ACLSslErrorStrategy, name); });
+     RegisterMaker("user_cert", [](TypeName name)->ACL* { return new ACLStrategised<X509*>(new ACLCertificateData(Ssl::GetX509UserAttribute, "*"), new ACLCertificateStrategy, name); });
+     RegisterMaker("ca_cert", [](TypeName name)->ACL* { return new ACLStrategised<X509*>(new ACLCertificateData(Ssl::GetX509CAAttribute, "*"), new ACLCertificateStrategy, name); });
+     RegisterMaker("server_cert_fingerprint", [](TypeName name)->ACL* { return new ACLStrategised<X509*>(new ACLCertificateData(Ssl::GetX509Fingerprint, "-sha1", true), new ACLServerCertificateStrategy, name); });
+     RegisterMaker("at_step", [](TypeName name)->ACL* { return new ACLStrategised<XactionStep>(new ACLAtStepData, new ACLAtStepStrategy, name); });
+     RegisterMaker("ssl::server_name", [](TypeName name)->ACL* { return new ACLStrategised<char const *>(new ACLServerNameData, new ACLServerNameStrategy, name); });
+     RegisterMaker("ssl::server_name_regex", [](TypeName name)->ACL* { return new ACLStrategised<char const *>(new ACLRegexData, new ACLServerNameStrategy, name); });

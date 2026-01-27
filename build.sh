@@ -17,14 +17,30 @@ fi
 COMPRESSION="store"
 DEBUG_MODE="1"
 USE_CCACHE="1"
+NO_CACHE=""
 CCACHE_DIR="/srv/ccache"
 RELEASE_NUMBER=$(head -1 release)
+FORCE_BUILD="0"
+
+if [ -f "no-cache" ]
+then
+	NO_CACHE="--no-cache"
+	USE_CCACHE="0"
+	FORCE_BUILD="1"
+fi
 
 cd "${BUILD}"
 DOCKER_IMAGE=`cat podmanimage`
 echo "${DOCKER_IMAGE}"
-stat podmanimage && \
-	( docker image inspect  "${DOCKER_IMAGE}" || docker build -t "${DOCKER_IMAGE}" . )
+
+if [ "${FORCE_BUILD}" -eq "1" ]
+then
+	docker build "${NO_CACHE}" -t "${DOCKER_IMAGE}" .
+else
+	stat podmanimage && \
+		( docker image inspect  "${DOCKER_IMAGE}" || docker build -t "${DOCKER_IMAGE}" . )
+fi
+
 docker run -it \
         -e COMPRESSION="${COMPRESSION}" \
         -e DEBUG_MODE="${DEBUG_MODE}" \

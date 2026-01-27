@@ -1,0 +1,24 @@
+--- src/SquidConfig.h	2022-04-30 13:34:04.000000000 +0300
++++ src/SquidConfig.h	2022-05-01 22:02:55.563966337 +0300
+@@ -335,20 +335,21 @@
+ #if LINUX_NETFILTER
+         int tproxy_uses_indirect_client;
+ #endif
+ #endif /* FOLLOW_X_FORWARDED_FOR */
+ 
+         int WIN32_IpAddrChangeMonitor;
+         int memory_cache_first;
+         int memory_cache_disk;
+         int hostStrictVerify;
+         int client_dst_passthru;
++        int interceptHostStrictVerify;
+         int dns_mdns;
+ #if USE_OPENSSL
+         bool logTlsServerHelloDetails;
+ #endif
+     } onoff;
+ 
+     int64_t shared_transient_entries_limit;
+ 
+     int pipeline_max_prefetch;
+ 

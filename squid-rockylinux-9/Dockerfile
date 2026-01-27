@@ -1,6 +1,7 @@
-FROM rockylinux:9
+FROM rockylinux/rockylinux:9
 
-RUN dnf install -y epel-release dnf-plugins-core \
+RUN dnf check-update && \
+	dnf install -y epel-release dnf-plugins-core \
    &&  dnf config-manager --set-enabled crb \
    &&  dnf clean all \
    &&  dnf update -y \

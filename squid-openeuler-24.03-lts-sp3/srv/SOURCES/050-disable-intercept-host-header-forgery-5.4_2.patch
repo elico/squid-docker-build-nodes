@@ -1,0 +1,44 @@
+--- src/SquidConfig.h	2022-02-07 08:46:21.000000000 +0200
++++ src/SquidConfig.h	2022-02-09 11:58:12.640801309 +0200
+@@ -323,40 +323,41 @@
+         int cache_miss_revalidate;
+         int emailErrData;
+         int httpd_suppress_version_string;
+         int global_internal_static;
+         int collapsed_forwarding;
+ 
+ #if FOLLOW_X_FORWARDED_FOR
+         int acl_uses_indirect_client;
+         int delay_pool_uses_indirect_client;
+         int log_uses_indirect_client;
+ #if LINUX_NETFILTER
+         int tproxy_uses_indirect_client;
+ #endif
+ #endif /* FOLLOW_X_FORWARDED_FOR */
+ 
+         int WIN32_IpAddrChangeMonitor;
+         int memory_cache_first;
+         int memory_cache_disk;
+         int hostStrictVerify;
+         int client_dst_passthru;
++        int interceptHostStrictVerify;
+         int dns_mdns;
+ #if USE_OPENSSL
+         bool logTlsServerHelloDetails;
+ #endif
+     } onoff;
+ 
+     int64_t shared_transient_entries_limit;
+ 
+     int pipeline_max_prefetch;
+ 
+     int forward_max_tries;
+     int connect_retries;
+ 
+     class ACL *aclList;
+ 
+     struct {
+         acl_access *http;
+         acl_access *adapted_http;
+         acl_access *icp;
+         acl_access *miss;

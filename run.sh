@@ -8,7 +8,7 @@ make build-oracle-9 \
 	build-rockylinux-9 build-rockylinux-10 \
 	build-almalinux-9 build-almalinux-10 \
 	build-debian-12 \
-	build-ubuntu-22.04 build-ubuntu-20.04 build-ubuntu-24.04
+	build-ubuntu-22.04 build-ubuntu-20.04 build-ubuntu-24.04 build-openeuler-2403
 
 make deploy-oracle-9-packages \
 	 deploy-rocky-9-packages deploy-rocky-10-packages \

@@ -18,9 +18,14 @@ get-latest-url-from-gogs:
 	curl -s http://gogs.ngtech.home/NgTech-Home/squid-latest/raw/main/latest.json |jq -r .url > latest-squid-url.txt
 
 get-latest-url-from-github:
-	curl   -H 'accept-language: en-US,en;q=0.9,he;q=0.8' -H 'cache-control: no-cache' -s https://raw.githubusercontent.com/elico/squid-latest/refs/heads/main/latest.json |jq -r .url > latest-squid-url.txt
+	curl -H 'accept-language: en-US,en;q=0.9,he;q=0.8' -H 'cache-control: no-cache' -s "https://raw.githubusercontent.com/elico/squid-latest/refs/heads/main/latest.json?$$(date +%y-%m-%d-%H-%M-%S)" |jq -r .url > latest-squid-url.txt
 
-build-rpms: build-oracle build-centos build-amzn build-alma build-rocky
+build-rpms: build-oracle build-centos build-amzn build-alma build-rocky build-openeuler
+
+build-openeuler: build-openeuler-2403
+
+build-openeuler-2403:
+	bash build.sh squid-openeuler-24.03-lts-sp3
 
 centos: build-centos
 
@@ -223,103 +228,111 @@ clean-packages:
 clean-build-flags:
 	bash clean-packages.sh build
 
-clean-all-containers: clean-debian-container clean-oracle-containers clean-amzn-containers clean-ubuntu-containers clean-fedora-containers clean-centos-containers
+clean-pre-containers-cleanup:
+	true | docker container prune
+
+clean-all-containers: clean-pre-containers-cleanup clean-debian-container clean-oracle-containers clean-amzn-containers clean-ubuntu-containers clean-fedora-containers clean-centos-containers clean-openeuler-containers
+
+clean-openeuler-containers: clean-openeuler-2403-container
+
+clean-openeuler-2403-container:
+	docker rmi $$(head -1 squid-openeuler-24.03-lts-sp3/podmanimage ) -f;true
 
 clean-alma-containers: clean-alma-8-container clean-alma-9-container
 
 clean-alma-8-container:
-	podman rmi $$(head -1 squid-almalinux-8/podmanimage ) -f;true
+	docker rmi $$(head -1 squid-almalinux-8/podmanimage ) -f;true
 
 clean-alma-9-container:
-	podman rmi $$(head -1 squid-almalinux-9/podmanimage ) -f;true
+	docker rmi $$(head -1 squid-almalinux-9/podmanimage ) -f;true
 
 clean-alma-10-container:
-	podman rmi $$(head -1 squid-almalinux-10/podmanimage ) -f;true
+	docker rmi $$(head -1 squid-almalinux-10/podmanimage ) -f;true
 
 clean-centos-containers: clean-centos-7-container clean-centos-8-container clean-centos-9-container
 
 clean-centos-7-container:
-	podman rmi squidbuild:centos7 -f;true
+	docker rmi squidbuild:centos7 -f;true
 
 clean-centos-8-container:
-	podman rmi squidbuild:centos8 -f;true
+	docker rmi squidbuild:centos8 -f;true
 
 clean-centos-9-container:
-	podman rmi squidbuild:centos9 -f;true
+	docker rmi squidbuild:centos9 -f;true
 
 clean-fedora-containers: clean-fedora-33-container clean-fedora-35-container clean-fedora-36-container clean-fedora-38-container clean-fedora-40-container
 
 clean-fedora-33-container:
-	podman rmi squidbuild:fedora33 -f;true
+	docker rmi squidbuild:fedora33 -f;true
 
 clean-fedora-35-container:
-	podman rmi squidbuild:fedora35 -f;true
+	docker rmi squidbuild:fedora35 -f;true
 
 clean-fedora-36-container:
-	podman rmi squidbuild:fedora36 -f;true
+	docker rmi squidbuild:fedora36 -f;true
 
 clean-fedora-38-container:
-	podman rmi squidbuild:fedora38 -f;true
+	docker rmi squidbuild:fedora38 -f;true
 
 clean-fedora-40-container:
-	podman rmi squidbuild:fedora40 -f;true
+	docker rmi squidbuild:fedora40 -f;true
 
 clean-ubuntu-containers: clean-ubuntu-16.04-container clean-ubuntu-18.04-container clean-ubuntu-20.04-container  clean-ubuntu-22.04-container clean-ubuntu-23.04-container
 
 clean-ubuntu-16.04-container:
-	podman rmi squidbuild:ubuntu1604 -f;true
+	docker rmi squidbuild:ubuntu1604 -f;true
 
 clean-ubuntu-18.04-container:
-	podman rmi squidbuild:ubuntu1804 -f;true
+	docker rmi squidbuild:ubuntu1804 -f;true
 
 clean-ubuntu-20.04-container:
-	podman rmi squidbuild:ubuntu2004 -f;true
+	docker rmi squidbuild:ubuntu2004 -f;true
 
 clean-ubuntu-22.04-container:
-	podman rmi squidbuild:ubuntu2204 -f;true
+	docker rmi squidbuild:ubuntu2204 -f;true
 
 clean-ubuntu-23.04-container:
-	podman rmi squidbuild:ubuntu2304 -f;true
+	docker rmi squidbuild:ubuntu2304 -f;true
 
 clean-ubuntu-24.04-container:
-	podman rmi squidbuild:ubuntu2404 -f;true
+	docker rmi squidbuild:ubuntu2404 -f;true
 
 
 
 clean-amzn-containers: clean-amzn-1-container clean-amzn-2-container
 
 clean-amzn-1-container:
-	podman rmi squidbuild:amzn1 -f;true
+	docker rmi squidbuild:amzn1 -f;true
 
 clean-amzn-2-container:
-	podman rmi squidbuild:amzn2 -f;true
+	docker rmi squidbuild:amzn2 -f;true
 
 
 clean-oracle-containers: clean-oracle-7-container clean-oracle-8-container clean-oracle-9-container
 
 clean-oracle-7-container:
-	podman rmi squidbuild:ol7 -f;true
+	docker rmi squidbuild:ol7 -f;true
 
 clean-oracle-8-container:
-	podman rmi squidbuild:ol8 -f;true
+	docker rmi squidbuild:ol8 -f;true
 
 clean-oracle-9-container:
-	podman rmi squidbuild:ol9 -f;true
+	docker rmi squidbuild:ol9 -f;true
 
 
 clean-debian-container: clean-debian-9-container clean-debian-10-container clean-debian-11-container clean-debian-12-container
 
 clean-debian-12-container:
-	podman rmi squidbuild:debian12 -f;true
+	docker rmi squidbuild:debian12 -f;true
 
 clean-debian-11-container:
-	podman rmi squidbuild:debian11 -f;true
+	docker rmi squidbuild:debian11 -f;true
 
 clean-debian-10-container:
-	podman rmi squidbuild:debian10 -f;true
+	docker rmi squidbuild:debian10 -f;true
 
 clean-debian-9-container:
-	podman rmi squidbuild:debian9 -f;true
+	docker rmi squidbuild:debian9 -f;true
 
 
 fetch-podman-images: fetch-oracle-images fetch-centos-images fetch-amzn-images fetch-debian-images fetch-ubuntu-images
@@ -328,67 +341,67 @@ fetch-podman-images: fetch-oracle-images fetch-centos-images fetch-amzn-images f
 fetch-oracle-images: fetch-oracle-7-image fetch-oracle-8-image fetch-oracle-9-image
 
 fetch-oracle-7-image:
-	podman pull oraclelinux:7
+	docker pull oraclelinux:7
 
 fetch-oracle-8-image:
-	podman pull oraclelinux:8
+	docker pull oraclelinux:8
 
 fetch-oracle-9-image:
-	podman pull oraclelinux:9
+	docker pull oraclelinux:9
 
 
 fetch-centos-images:  fetch-centos-7-image fetch-centos-8-image fetch-centos-9-image
 
 fetch-centos-7-image:
-	podman pull centos:7
+	docker pull centos:7
 
 fetch-centos-8-image:
-	podman pull centos:stream8
+	docker pull centos:stream8
 
 fetch-centos-9-image:
-	podman pull centos:stream9
+	docker pull centos:stream9
 
 
 fetch-debian-images: fetch-debian-9-image fetch-debian-10-image fetch-debian-11-image fetch-debian-12-image
 
 fetch-debian-9-image:
-	podman pull debian:stretch
+	docker pull debian:stretch
 
 fetch-debian-10-image:
-	podman pull debian:buster
+	docker pull debian:buster
 
 fetch-debian-11-image:
-	podman pull debian:bullseye
+	docker pull debian:bullseye
 
 fetch-debian-12-image:
-	podman pull debian:bookworm
+	docker pull debian:bookworm
 
 
 fetch-ubuntu-images: fetch-ubuntu-16.04-image fetch-ubuntu-18.04-image fetch-ubuntu-20.04-image fetch-ubuntu-22.04-image fetch-ubuntu-23.04-image
 
 fetch-ubuntu-20.04-image:
-	podman pull ubuntu:20.04
+	docker pull ubuntu:20.04
 
 fetch-ubuntu-22.04-image:
-	podman pull ubuntu:22.04
+	docker pull ubuntu:22.04
 
 fetch-ubuntu-23.04-image:
-	podman pull ubuntu:23.04
+	docker pull ubuntu:23.04
 
 
 fetch-ubuntu-18.04-image:
-	podman pull ubuntu:18.04
+	docker pull ubuntu:18.04
 
 fetch-ubuntu-16.04-image:
-	podman pull ubuntu:16.04
+	docker pull ubuntu:16.04
 
 fetch-amzn-images: fetch-amzn-1-image fetch-amzn-2-image
 
 fetch-amzn-1-image:
-	podman pull amazonlinux:1
+	docker pull amazonlinux:1
 
 fetch-amzn-2-image:
-	podman pull amazonlinux:2
+	docker pull amazonlinux:2
 
 
 deploy-packages:
