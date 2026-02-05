@@ -1,21 +1,23 @@
 FROM rockylinux/rockylinux:9
 
-RUN dnf check-update && \
-	dnf install -y epel-release dnf-plugins-core \
-   &&  dnf config-manager --set-enabled crb \
-   &&  dnf clean all \
-   &&  dnf update -y \
-   &&  dnf install -y gcc gcc-c++ libtool libtool-ltdl make cmake \
+RUN dnf update -y \
+  && dnf install -y epel-release dnf-plugins-core \
+  && crb enable \
+  && dnf clean all 
+
+
+RUN dnf update -y \
+  && dnf install -y gcc gcc-c++ libtool libtool-ltdl make cmake \
 		git pkgconfig sudo automake autoconf yum-utils rpm-build \
-   &&  dnf install -y libxml2 expat-devel openssl-devel libcap ccache \
+  && dnf install -y libxml2 expat-devel openssl-devel libcap ccache \
 		libtool-ltdl-devel git autoconf \
 		automake libtool gcc-c++ bzip2 ed \
 		make openldap-devel pam-devel libxml2-devel \
 		libcap-devel screen vim nettle-devel \
 		libtdb-devel libtdb redhat-rpm-config rpm-build rpm-devel \
 		libnetfilter_conntrack-devel \
-   &&  dnf install -y perl-libwww-perl ruby ruby-devel \
-   &&  dnf clean all
+  && dnf install -y perl-libwww-perl ruby ruby-devel \
+  && dnf clean all
 
 RUN dnf update -y \
    &&  dnf install -y systemd-units openldap-devel pam-devel \
