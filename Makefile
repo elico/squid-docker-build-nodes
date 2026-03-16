@@ -576,6 +576,14 @@ deploy-almalinux-9-packages: deploy-alma-9-packages
 
 deploy-almalinux-10-packages: deploy-alma-10-packages
 
+deploy-openeuler-2403-packages:
+	mkdir -p $(REPO_ROOT)/openeuler/2403/x86_64
+	mkdir -p $(REPO_ROOT)/openeuler/2403/SRPMS
+	cp -v squid-openeuler-24.03-lts-sp3/srv/packages/*.x86_64.rpm $(REPO_ROOT)/openeuler/2403/x86_64/;true
+	cp -v squid-openeuler-24.03-lts-sp3/srv/packages/*.src.rpm $(REPO_ROOT)/openeuler/2403/SRPMS/;true
+
+deploy-openeuler: deploy-openeuler-2403-packages
+
 
 create-repo-rpms: create-repo-alma create-repo-rocky create-repo-oracle create-repo-fedora create-repo-amzn
 
@@ -749,6 +757,15 @@ create-beta-repo-oracle9:
 	cd $(REPO_ROOT)/oracle/9/beta/SRPMS && createrepo ./
 	cd $(REPO_ROOT)/oracle/9/beta/x86_64 && createrepo ./
 	touch $(REPO_ROOT)/oracle/9/beta
+
+create-repo-openeuler-2403:
+	mkdir -p $(REPO_ROOT)/openeuler/2403/x86_64
+	mkdir -p $(REPO_ROOT)/openeuler/2403/SRPMS
+	cd $(REPO_ROOT)/openeuler/2403/SRPMS && createrepo ./
+	cd $(REPO_ROOT)/openeuler/2403/x86_64 && createrepo ./
+	touch $(REPO_ROOT)/openeuler/2403
+
+create-repo-openeuler: create-repo-openeuler-2403
 
 create-repo-amzn: create-repo-amzn2
 
